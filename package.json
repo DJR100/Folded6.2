@@ -1,0 +1,31 @@
+{
+  "name": "folded",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint --fix --no-warn-ignored --ignore-pattern 'node_modules' \"**/*.{ts,tsx}\"",
+    "format": "prettier --write \"**/*.+(ts|tsx|json|html)\""
+  },
+  "lint-staged": {
+    "*.{ts,tsx,json,html}": [
+      "eslint --fix --no-warn-ignored",
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@types/react": "~19.0.10",
+    "esbuild": "^0.25.2",
+    "eslint": "^9.24.0",
+    "eslint-import-resolver-typescript": "^4.3.2",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "lint-staged": "^15.5.1",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.30.1"
+  }
+}

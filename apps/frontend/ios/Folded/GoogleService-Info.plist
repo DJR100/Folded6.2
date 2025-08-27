@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>126968108305-rqra3mhc16ac0s2bl84dhiesko93hs8f.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.126968108305-rqra3mhc16ac0s2bl84dhiesko93hs8f</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAUyQYT2duXscPm7Rsn0cT2ou69-eq9uJg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>126968108305</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.folded.so</string>
+	<key>PROJECT_ID</key>
+	<string>folded-so</string>
+	<key>STORAGE_BUCKET</key>
+	<string>folded-so.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:126968108305:ios:935e88bc83910cf07e28b0</string>
+</dict>
+</plist>

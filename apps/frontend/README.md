@@ -1,0 +1,1 @@
+npx expo install @types/lodash lodash tailwind-merge tailwindcss react-native-plaid-link-sdk nativewind expo-notifications expo-image-picker expo-device classnames @gorhom/bottom-sheet @react-native-firebase/firestore @react-native-firebase/functions @react-native-firebase/messaging react-native-vision-camera

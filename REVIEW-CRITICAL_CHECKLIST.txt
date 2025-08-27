@@ -1,0 +1,265 @@
+Folded - Review-Critical Delivery Plan (Stage A + B) — Settings Side Page Flow
+
+Purpose
+A no-nonsense, implementation-ordered checklist to reach App Store review readiness.
+This version aligns with the side-page Settings flow shown in the screenshots
+(gear icon → slide-in Settings, with FEEDBACK and ACCOUNT sections, and an
+Account settings detail page).
+
+Ground rules
+- Only request permissions when a visible Settings control exists and has a clear purpose string.
+- All external links open in in-app browser; no 404s; required disclaimers present.
+- Remove unused frameworks and permissions (avoid surprise prompts).
+- Version/build numbers must match and be visible in-app.
+- Privacy map must match the binary’s actual data flows.
+- Export/Networking over HTTPS only.
+
+Implementation order
+
+1) Settings side page shell (gear → slide-in) + navigation
+Deliverable
+- A dedicated Settings route that slides in from the right when tapping the gear
+  on the home screen. Root sections: FEEDBACK and ACCOUNT.
+- Rows exactly as shown (plus a couple additions noted below).
+
+Acceptance
+- Slide-in animation, back gesture, and back button work on small devices.
+- Dark mode looks clean.
+
+How
+- Create/confirm route stack:
+  - src/app/settings/index.tsx (root side page; FEEDBACK and ACCOUNT sections)
+  - src/app/settings/account.tsx (Account settings detail)
+  - src/app/settings/notifications.tsx (Notifications detail; see section 3)
+  - src/app/settings/privacy-map.tsx (Data & Privacy page; see section 4)
+  - src/app/settings/licenses.tsx (Open-source licenses; see section 5)
+- Replace any Settings modal with this real routed side page (retain modal only if needed temporarily).
+- Use simple list rows, chevrons, and proper back behavior with expo-router Stack.
+- Ensure root Settings can be reached from gear icon on the home screen.
+
+Verify
+- Navigate root → Account settings → back. Test iPhone SE width and dark mode.
+
+2) FEEDBACK section (root)
+Deliverable
+- Rows on root Settings page:
+  - Give Us a Review (opens native rating prompt or App Store page)
+  - Join the Community (opens community link in in-app browser)
+  - Provide Feedback (opens existing FeedbackModal; posts to Firestore)
+  - Support Email (prefilled email)
+  - Crisis & Resources (required; disclaimer visible on open)
+
+Acceptance
+- All links open via in-app browser and succeed; no 404s.
+- Feedback posts a Firestore record.
+- Support Email opens prefilled with app version/build/device/iOS in the subject.
+- Crisis & Resources page shows the "Folded is not medical or clinical advice" disclaimer.
+
+How
+- Review prompt: use `StoreReview.requestReview()` (or deep-link to App Store).
+- In-app browser: expo-web-browser with error handling (toast on failure).
+- Feedback: reuse existing FeedbackModal and submission flow.
+- Support Email: expo-mail-composer
+  - Subject: "Folded Support – v{Constants.expoConfig.version} ({build}) – {Device.modelName} iOS {SystemVersion}"
+  - Body template with space for user text; To: support@yourdomain
+  - Fallback to `mailto:` if composer unavailable.
+- Crisis & Resources:
+  - Simple static screen reachable from the root FEEDBACK list.
+  - Top text: "If you’re in danger, call local emergency services."
+  - Prominent one-line disclaimer: "Folded is not medical or clinical advice."
+  - Regional helplines (links) open via in-app browser.
+
+Verify
+- Rating prompt appears (or opens App Store).
+- Community/Helplines open in-app; failures show toast.
+- Feedback submission visible in Firestore.
+- Email composer prefilled; fallback works.
+
+3) ACCOUNT → Notifications row with trailing toggle + detail page
+Deliverable
+- Root ACCOUNT section contains:
+  - Notifications: row with trailing toggle.
+    - Toggle ON/OFF directly.
+    - Tapping the row (not the switch) navigates to Notifications detail page for advanced options.
+
+- Notifications detail page:
+  - Reminders toggle (mirrors root toggle)
+  - Quiet Hours (time range start/end)
+  - Test Notification button (fires within ~5s if permitted)
+  - Clear permission states: undetermined → rationale + request; denied → "Enable in iOS Settings" CTA
+
+Acceptance
+- First enable asks for permission with a clear purpose.
+- Toggle off cancels all schedules.
+- Test fires within 5s when allowed.
+- Quiet Hours honored; schedules re-evaluated on save.
+- Denied state shows "Enable in iOS Settings" and opens Settings.
+
+How
+- Use expo-notifications for local reminders; keep FCM for push (do not mix responsibilities).
+- Data model (client or user doc):
+  - notifications.remindersEnabled: boolean
+  - notifications.reminderTime: string ("21:00") or schedule policy
+  - notifications.quietHours: { start: "22:00", end: "08:00" }
+  - notifications.lastScheduledAt?: number (for debugging)
+- Permission flow:
+  - Undetermined: show rationale → Notifications.requestPermissionsAsync()
+  - Denied: disabled UI + CTA to open iOS Settings
+- Scheduling:
+  - When enabled and permitted, schedule daily local notification at reminderTime,
+    skipping Quiet Hours (schedule next outside window).
+  - Toggle off → cancel all scheduled notifications.
+  - Test → schedule one-off notification for +5 seconds with a recognizable title/body.
+- Foreground handling: optional alert display.
+
+Verify
+- Fresh enable → permission sheet → schedule created.
+- Toggle off → no notifications fire thereafter.
+- Quiet Hours window respected.
+- Test fires in 5 seconds if permission granted.
+
+4) ACCOUNT → Account settings detail page
+Deliverable
+- Sections and rows:
+  - PRIVACY
+    - Privacy Policy (in-app browser)
+    - Terms of Service (in-app browser)
+  - PROFILE
+    - Display Name (editable; persists)
+  - SESSION
+    - Email (read-only with copy affordance)
+    - Sign Out (returns to Welcome; clears transient state/storage)
+  - DATA & PRIVACY
+    - Data & Privacy (opens privacy map page; see below)
+  - ABOUT
+    - Version & Build (values visible and matching TestFlight)
+    - Open-source Licenses (list page)
+  - DANGER
+    - Delete Account (destructive; full purge flow)
+
+Acceptance
+- Display Name edit persists.
+- Sign Out clears state and returns to Welcome.
+- Data & Privacy page content matches actual data use.
+- Version/Build match `app.json`/Info.plist/TestFlight.
+- Delete flow completes, clears caches, toasts success, returns to Welcome.
+
+How
+- Display Name: open existing ProfileEditModal or inline editor; persist via `updateUser('displayName', value)`.
+- Sign Out: call existing `signOut()`, navigate to Welcome, wipe transient state (AsyncStorage/Keychain if used).
+- Data & Privacy page (settings/privacy-map.tsx):
+  - What you collect, why, linked/unlinked, retention, deletion path.
+  - Collected:
+    - Auth UID (linked): account functionality; retained until delete.
+    - Email (optional, linked): account comms; retained until delete.
+    - Usage/Diagnostics (events to Firestore): app improvement; linked to UID if signed in; retained until delete.
+    - Messaging token: deliver push; linked to UID; retained until token invalid or user deletes.
+  - Not collected: contacts, location, health, financial (unless banking is enabled later).
+  - Sharing: No third-party tracking SDKs; events stay in your Firebase project.
+  - Deletion: Settings → Account settings → Delete Account.
+- About:
+  - Source of truth: app.json (EAS). Sync Info.plist to match.
+  - Display:
+    - App version: `Constants.expoConfig?.version`
+    - Build: CFBundleVersion (or mirror from app.json)
+  - Licenses:
+    - Option A: static list of key libs.
+    - Option B: generate JSON at build-time and render.
+- Delete Account (end-to-end):
+  - UI: destructive row → confirm sheet "Permanent, unrecoverable"; show activity while deleting.
+  - Backend callable (Firebase Functions): `purgeUser`
+    - Delete Firestore user doc and ALL subcollections (listCollections + batch delete)
+    - Delete Storage files under profile-images/{uid}/**
+    - Remove analytics events with userId==uid (batched deletes)
+    - Clear messaging token record
+    - Delete Auth user via Admin SDK
+    - Return { ok: true }
+  - Security: callable requires authenticated user; runs as admin.
+  - Client sequence:
+    1) Optional re-auth if required
+    2) Call `purgeUser`
+    3) Clear local caches/persisted stores
+    4) Show success toast
+    5) Navigate to Welcome
+
+Verify
+- Links open in in-app browser (no 404s).
+- Display Name persists; Sign Out returns to Welcome.
+- Privacy map content aligns with App Store Connect answers and actual code.
+- Version/Build values match TestFlight.
+- After deletion, relaunch shows Welcome; user data gone in Firestore/Storage.
+
+5) Version/build alignment (blocker to About)
+Deliverable
+- Align versions now.
+
+Acceptance
+- Values in `app.json` and iOS `Info.plist` match; About shows the same; TestFlight matches.
+
+How
+- app.json: version "1.x.y" and ios.buildNumber "N"
+- ios/Info.plist: CFBundleShortVersionString and CFBundleVersion match app.json
+- Prefer app.json as source-of-truth with EAS; sync Info.plist.
+
+Verify
+- TestFlight (or local build) shows matching values; About screen matches both.
+
+6) Permissions & purpose strings; remove unused frameworks
+Deliverable
+- Only request permissions with visible controls and clear reasons.
+- Remove microphone permission if unused.
+
+Acceptance
+- No permission prompts appear before user intent (e.g., toggling Notifications).
+
+How
+- Keep: Camera & Photos (profile/daily challenge) — strings already present.
+- Remove: Microphone permission text and any plugin microphone option if not recording audio.
+- Notifications purpose tied to Reminders toggle and detail page rationale.
+- Audit Android permissions too.
+
+Verify
+- No unexpected prompts on app start. Toggling features triggers clear, justified prompts.
+
+7) Networking & Export
+Deliverable
+- HTTPS only; avoid ATS exceptions; copy avoids regulated claims.
+
+Acceptance
+- App functions with ATS on; no medical/clinical claims.
+
+How
+- Info.plist:
+  - NSAllowsArbitraryLoads=false (keep)
+  - NSAllowsLocalNetworking=false unless truly needed
+- Copy:
+  - Keep Crisis disclaimer strong; avoid medical/clinical claims.
+
+Verify
+- All APIs load over HTTPS. Copy reviewed by a non-technical reviewer.
+
+8) Reviewer notes & test access (App Store Connect)
+Deliverable
+- Exact sign-in path (or steps to self-create); list any feature flags.
+- Note timers computed from stored timestamps; no background execution.
+- Steps to reach Notifications test and Crisis info.
+
+Acceptance
+- A fresh tester can follow steps and see core loop in under 2 minutes.
+
+How
+- Provide:
+  - Steps to sign up/sign in (email/password or Apple)
+  - Steps: gear → Settings → Notifications (toggle + Test) and Crisis & Resources
+  - Note: reminders are local notifications scheduled from device time
+  - Mention Account settings → Privacy links, Data & Privacy map, Delete Account
+  - Include a demo account if needed (and how to reset)
+
+Verify
+- Dry run on a clean device; timer math and navigation work as described.
+
+QA runbook (quick hits)
+- Settings: gear → side page slides in; back works on iPhone SE; dark mode OK.
+- FEEDBACK: Review prompt opens; community/helplines load in-app; Feedback creates Firestore record; Support Email prefilled.
+- Notifications: Root toggle honors permission; detail page → enable → schedule; Quiet Hours honored; Test fires in 5s; toggle off cancels; denied state CTA works.
+- Account settings: edit display name persists; sign out returns to Welcome; Privacy/Terms links load; Data & Privacy map matches App Store answers; About shows matching version/build; licenses screen
