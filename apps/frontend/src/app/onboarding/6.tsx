@@ -22,7 +22,7 @@ export default function Onboarding() {
 
   return (
     <OnboardingLayout
-      title="Join the community"
+      title="Join The Community"
       titleClassName="text-left"
       button={{
         text: "Continue",
@@ -39,38 +39,42 @@ export default function Onboarding() {
           <Text variant="p">
             Folded is community based. We rely on peer support.
           </Text>
-          <Text variant="p">
-            The first step to joining this community is to take a 7-day bet on
-            yourself, with us cheering you on.
-          </Text>
-          <Text variant="p">
-            Imagine looking back in seven days and seeing real progress. Let’s
-            make that happen together.
-          </Text>
 
           <View className="flex flex-col gap-4 mt-4">
             <Friend
               message="You're stronger than the urge. Gambling won't fix what's hurting - it only takes more. Step back, breathe, and choose peace. You deserve a life of control, not chaos. Help is out there."
-              name="John Doe"
-              streak={6}
+              name="Jay Peterson"
+              streak={32}
               src={require("@/assets/images/faces/face-6.jpg")}
               selected={selectedUser === "user-0"}
               onPress={() => setSelectedUser("user-0")}
             />
 
+            {/* Between tile 1 and 2 */}
+            <Text variant="p">
+              The first step to joining this community is to take a 7-day bet on
+              yourself, with us cheering you on.
+            </Text>
+
             <Friend
               message="You're not alone - gambling is a trap, not a solution. Every time you walk away, you're winning your life back. Choose freedom. Choose yourself."
-              name="Jane Doe"
-              streak={4}
+              name="Scott Heyworth"
+              streak={67}
               src={require("@/assets/images/faces/face-7.jpg")}
               selected={selectedUser === "user-1"}
               onPress={() => setSelectedUser("user-1")}
             />
 
+            {/* Between tile 2 and 3 */}
+            <Text variant="p">
+              Imagine looking back in seven days and seeing real progress. Let’s
+              make that happen together.
+            </Text>
+
             <Friend
               message="That next bet won’t change the past, but stopping now can change your future. You’re worth more than the losses. You have the power to take your life back."
-              name="Jeremy Stone"
-              streak={5}
+              name="Chance Klein"
+              streak={15}
               src={require("@/assets/images/faces/face-0.jpg")}
               selected={selectedUser === "user-2"}
               onPress={() => setSelectedUser("user-2")}
@@ -100,8 +104,8 @@ const Friend = ({
   <TouchableOpacity onPress={onPress}>
     <View
       className={cn(
-        "py-4 px-6 rounded-xl bg-content2 flex flex-col gap-4 border-2 border-transparent",
-        selected && "border-accent bg-accent/20",
+        // Always show green outline and accent glow
+        "py-4 px-6 rounded-xl bg-content2 flex flex-col gap-4 border-2 border-accent bg-accent/20",
       )}
     >
       <Text>"{message}"</Text>

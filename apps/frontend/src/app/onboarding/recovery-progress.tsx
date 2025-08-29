@@ -117,8 +117,7 @@ export default function RecoveryProgress() {
       >
         <Text variant="p" className="text-center mb-6">
           If you've already started your recovery journey, let us know how many
-          days you've been gambling-free. We want to celebrate every step of
-          your progress!
+          days you've been gambling-free.
         </Text>
 
         {showCelebration && (

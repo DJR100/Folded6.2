@@ -19,7 +19,7 @@ export default function Onboarding() {
 
   return (
     <OnboardingLayout
-      title="What's your motivational message to other gamblers?"
+      title="Motivational message to other gamblers?"
       titleClassName="text-left"
       button={{
         text: "Continue",
@@ -31,14 +31,14 @@ export default function Onboarding() {
         A key part of recovery is giving and receiving support from others.
       </Text> */}
       <Text variant="p">
-        Please take some time to write a motivational message. Your message will
+        Please write a motivational message. Your message will
         be sent to other recovering gamblers when we detect that they are at
-        risk of relapsing.
+        risk of relapse.
       </Text>
-      <Text variant="p" className="text-danger">
+      {/* <Text variant="p" className="text-danger">
         You may not be granted access to the community if your message is
         generic or not thoughtful.
-      </Text>
+      </Text> */}
       <View className="flex flex-col gap-2 items-end justify-center">
         <Text
           variant="p"
