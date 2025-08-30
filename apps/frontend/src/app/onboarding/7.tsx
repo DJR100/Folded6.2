@@ -73,14 +73,14 @@ export default function Onboarding() {
             <Text variant="p" muted className="text-center italic">
               "Gambling was ruining my life. I lost everything and I wasted so
               much time doing it. I lied to everyone around me. I didn't think I
-              could fix things."
+              could fix things, until I found Folded."
             </Text>
           </View>
 
           {/* Support Joe */}
           <View className="flex flex-col gap-4 p-4 py-8 rounded-xl bg-content2">
             <Text variant="h2" className="text-center">
-              Support Joe
+              Support James
             </Text>
             <View className="flex justify-center items-center h-40">
               <Image
@@ -89,7 +89,7 @@ export default function Onboarding() {
               />
             </View>
             <Text variant="p" className="text-center">
-              People like Joe need support. Join the community to help them out.
+              People like James need support. Join the community to help them out.
             </Text>
           </View>
 
@@ -100,20 +100,20 @@ export default function Onboarding() {
             </Text>
             <View className="flex flex-col gap-2">
               {/* Row */}
-              <Row>Gambling recovery courses and tasks</Row>
+              <Row>Gambling recovery trackers</Row>
               <Row>Community support forums</Row>
-              <Row>
-                One-click self exclusion from gambling sites and physical
-                casinos
-              </Row>
-              <Row>Gambling site and app blocker</Row>
+              {/* <Row>
+                One-click self-exclusion from gambling sites
+              </Row> */}
+              {/* <Row>Gambling site and app blocker</Row> */}
               <Row>Gambling hotline access</Row>
-              <Row>Debt regnegotiation service access</Row>
+              <Row>Panic button to prevent relapses</Row>
+              {/* <Row>Debt renegotiation service access</Row> */}
             </View>
           </View>
 
           {/* Accountability partner */}
-          <View className="flex flex-col gap-4 p-4 py-8 rounded-xl bg-content2">
+          {/* <View className="flex flex-col gap-4 p-4 py-8 rounded-xl bg-content2">
             <Text variant="h2" className="text-center">
               Accountability partner
             </Text>
@@ -123,7 +123,7 @@ export default function Onboarding() {
               receive texts if we detect suspicious transactions in your bank
               account (you connect your bank account in the next step)
             </Text>
-          </View>
+          </View> */}
         </View>
       </ScrollView>
 

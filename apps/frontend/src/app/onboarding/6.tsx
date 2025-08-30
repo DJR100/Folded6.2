@@ -22,7 +22,7 @@ export default function Onboarding() {
 
   return (
     <OnboardingLayout
-      title="Join The Community"
+      title="Join the Community"
       titleClassName="text-left"
       button={{
         text: "Continue",
@@ -34,10 +34,15 @@ export default function Onboarding() {
       //   router.back();
       // }}
     >
-      <ScrollView>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        overScrollMode="never" // Android: hide edge-glow
+        contentContainerStyle={{ paddingBottom: 24 }} // increase to 32 if needed
+      >
         <View className="flex flex-col gap-2">
           <Text variant="p">
-            Folded is community based. We rely on peer support.
+            Folded is community based. Hear real stories from our users:
           </Text>
 
           <View className="flex flex-col gap-4 mt-4">
@@ -73,7 +78,7 @@ export default function Onboarding() {
 
             <Friend
               message="That next bet won’t change the past, but stopping now can change your future. You’re worth more than the losses. You have the power to take your life back."
-              name="Chance Klein"
+              name="James Klein"
               streak={15}
               src={require("@/assets/images/faces/face-0.jpg")}
               selected={selectedUser === "user-2"}

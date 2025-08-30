@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 
 import { OnboardingLayout } from "@/components/layouts/onboarding";
-import { Text } from "@/components/ui";
+import { Text, View } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
 
 export default function Onboarding() {
@@ -9,9 +9,9 @@ export default function Onboarding() {
 
   return (
     <OnboardingLayout
-      title="Thanks for joining"
+      title="Thanks for Joining"
       button={{
-        text: "Go to dashboard",
+        text: "Start Recovery",
         onPress: async () => {
           // ✅ CRITICAL FIX: Update tier in database to mark onboarding complete
           await updateUser("tier", 1);
@@ -20,7 +20,11 @@ export default function Onboarding() {
         },
       }}
     >
-      <Text>You can now continue through to the dashboard.</Text>
+      <Text variant="p">You’ve just taken back control.</Text>
+      <View className="h-2" />
+      <Text variant="p">You should feel proud for wanting to change your life.</Text>
+      <View className="h-2" />
+      <Text variant="p">The best time to invest in yourself is now.</Text>
     </OnboardingLayout>
   );
 }
