@@ -189,6 +189,8 @@ function DashboardContent() {
   const usdPerMs = user?.spendMeta?.usdPerMs;
   const quitTimestampMs = user?.streak?.start;
 
+  // (Removed time-left ring state and calculations)
+
   return (
     <DashboardLayout>
       <View className="flex justify-between flex-1">
@@ -239,6 +241,7 @@ function DashboardContent() {
 
           {/* Daily Challenge Button with updated styling */}
           <View className="w-full px-4 mt-3">
+            <View>
             <TouchableOpacity
               onPress={() => {
                 if (!buttonConfig.disabled) {
@@ -280,6 +283,7 @@ function DashboardContent() {
                 {isLoading ? "Loading..." : buttonConfig.text}
               </Text>
             </TouchableOpacity>
+            </View>
           </View>
 
           {/* Daily Challenge Streak Tracker */}
