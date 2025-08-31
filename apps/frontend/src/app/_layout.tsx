@@ -9,7 +9,6 @@ import "../global.css";
 import { View } from "@/components/ui";
 import { AuthContextProvider } from "@/hooks/use-auth-context";
 import { useFontLoad } from "@/hooks/use-font-load";
-import { DevOverlay } from "@/components/dev/devoverlay";
 
 export default function Root() {
   const fontsLoaded = useFontLoad();
@@ -24,7 +23,6 @@ export default function Root() {
               <Slot />
               <StatusBar style="light" translucent />
               <PortalHost name="bottom-sheet" />
-              {__DEV__ && <DevOverlay />}
             </SafeAreaView>
           </View>
         </AuthContextProvider>
