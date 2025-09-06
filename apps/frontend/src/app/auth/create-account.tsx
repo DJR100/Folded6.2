@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Button, Input, Text, View } from "@/components/ui";
 import { auth, useAuthContext } from "@/hooks/use-auth-context";
 import { api } from "@/lib/firebase";
+import Feather from "@expo/vector-icons/Feather";
+import * as WebBrowser from "expo-web-browser";
+import { TouchableOpacity } from "react-native";
 
 export default function CreateAccountScreen() {
   const { signUp, user } = useAuthContext();
@@ -11,6 +14,7 @@ export default function CreateAccountScreen() {
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
 
   if (user?.tier) return <Redirect href="/dashboard" />;
   if (user) return <Redirect href="/onboarding" />;
@@ -49,9 +53,35 @@ export default function CreateAccountScreen() {
           value={password}
           onChangeText={setPassword}
         />
+
+        <View className="flex-row items-center gap-2 mt-2">
+          <TouchableOpacity onPress={() => setAcceptedLegal((v) => !v)}>
+            <View className="w-5 h-5 rounded-md border border-white/40 items-center justify-center">
+              {acceptedLegal && <Feather name="check" size={14} color="white" />}
+            </View>
+          </TouchableOpacity>
+          <Text variant="sm" muted>
+            By Signing up, you agree to our{" "}
+            <Text
+              className="text-accent underline"
+              onPress={() => WebBrowser.openBrowserAsync("https://folded.app/terms")}
+            >
+              Terms of Service
+            </Text>{" "}
+            and{" "}
+            <Text
+              className="text-accent underline"
+              onPress={() => WebBrowser.openBrowserAsync("https://folded.app/privacy")}
+            >
+              Privacy Policy
+            </Text>
+          </Text>
+        </View>
+
         <Button
           variant="accent"
           text="Create Account"
+          disabled={!acceptedLegal}
           onPress={async () => {
             // 1) Create Firebase Auth user (handles email uniqueness)
             try {

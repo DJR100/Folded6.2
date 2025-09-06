@@ -55,19 +55,6 @@ export default function SignInScreen() {
             </Text>
           </Text>
         </View>
-        {/* TODO: Add social login */}
-        <View className="gap-2 mt-4">
-          <Button
-            variant="glass"
-            text="Continue with Apple (placeholder)"
-            onPress={() => router.push("/auth/create-account")}
-          />
-          <Button
-            variant="glass"
-            text="Continue with Google (placeholder)"
-            onPress={() => router.push("/auth/create-account")}
-          />
-        </View>
       </View>
     </View>
   );

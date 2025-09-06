@@ -46,7 +46,7 @@ const CRISIS_RESOURCES = [
   {
     title: "Gamblers Anonymous",
     subtitle: "Find local meetings",
-    website: "https://www.gamblersanonymous.org/ga/locations",
+    website: "https://gamblersanonymous.org/find-a-meeting/",
     description: "Support groups and meetings in your area",
     icon: "users" as const,
   },
