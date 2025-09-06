@@ -14,15 +14,13 @@ export const useNotifications = () => {
       if (!token) return;
       await api({
         endpoint: "notifications-updateToken",
-        data: {
-          token,
-        },
+        data: { token },
       });
       setExpoPushToken(token);
     });
 
     messaging().onMessage(async (remoteMessage) => {
-      console.log("Message received", remoteMessage);
+      if (__DEV__) console.log("Message received", remoteMessage);
       Alert.alert(
         remoteMessage.notification?.title ?? "",
         remoteMessage.notification?.body ?? "",
@@ -31,13 +29,11 @@ export const useNotifications = () => {
 
     // Background/quit state (Android)
     messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-      console.log("Message handled in the background!", remoteMessage);
+      if (__DEV__) console.log("Message handled in the background!", remoteMessage);
     });
   }, []);
 
-  return {
-    expoPushToken,
-  };
+  return { expoPushToken };
 };
 
 export const registerForPushNotificationsAsync = async () => {
@@ -52,11 +48,11 @@ export const registerForPushNotificationsAsync = async () => {
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (!enabled) {
-    console.log("Permission not granted");
+    if (__DEV__) console.log("Permission not granted");
     return;
   }
 
   const token = await messaging().getToken();
-  console.log("FCM Token:", token);
+  if (__DEV__) console.log("FCM Token:", token);
   return token;
 };

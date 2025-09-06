@@ -6,6 +6,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import "../global.css";
 
+// Silence console logs in production builds
+if (!__DEV__) {
+  const noop = () => {};
+  // Preserve console.error for error reporting
+  console.log = noop;
+  console.info = noop;
+  console.warn = noop;
+}
+
 import { View } from "@/components/ui";
 import { AuthContextProvider } from "@/hooks/use-auth-context";
 import { useFontLoad } from "@/hooks/use-font-load";

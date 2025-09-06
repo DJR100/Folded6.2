@@ -13,17 +13,17 @@ export function initializeRecoveryCounters(existingDays: number) {
   const adjustedStartTime = now - existingDays * millisecondsPerDay;
 
   // 🔍 DEBUG: Log the calculation details
-  console.log("🔧 Recovery Counter Initialization Debug:");
-  console.log(`  📅 Existing days: ${existingDays}`);
-  console.log(
-    `  ⏰ Current timestamp: ${now} (${new Date(now).toISOString()})`,
-  );
-  console.log(
-    `  ⏰ Adjusted start time: ${adjustedStartTime} (${new Date(adjustedStartTime).toISOString()})`,
-  );
-  console.log(
-    `  📊 Days difference: ${(now - adjustedStartTime) / millisecondsPerDay}`,
-  );
+  if (__DEV__) {
+    console.log("🔧 Recovery Counter Initialization Debug:");
+    console.log(`  📅 Existing days: ${existingDays}`);
+    console.log(`  ⏰ Current timestamp: ${now} (${new Date(now).toISOString()})`);
+    console.log(
+      `  ⏰ Adjusted start time: ${adjustedStartTime} (${new Date(adjustedStartTime).toISOString()})`,
+    );
+    console.log(
+      `  📊 Days difference: ${(now - adjustedStartTime) / millisecondsPerDay}`,
+    );
+  }
 
   // 2. Initialize daily challenge data to match recovery streak
   const yesterday = new Date();
@@ -38,7 +38,7 @@ export function initializeRecoveryCounters(existingDays: number) {
     currentDayState: "pending", // Ready for today's challenge
   };
 
-  console.log("🎯 Daily Challenge Data:", dailyChallengeData);
+  if (__DEV__) console.log("🎯 Daily Challenge Data:", dailyChallengeData);
 
   return {
     streakStart: adjustedStartTime,

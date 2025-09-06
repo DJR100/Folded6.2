@@ -122,6 +122,7 @@ function DashboardContent() {
     };
 
     // 🔍 ONE-TIME DEBUG: Log what we're working with (only once per user change)
+if (__DEV__) {
     console.log("🎯 Dashboard Debug - User streak data:");
     console.log(`  👤 User streak.start: ${user?.streak?.start}`);
     console.log(
@@ -133,6 +134,7 @@ function DashboardContent() {
     console.log(
       `  📊 Existing recovery days: ${user?.demographic?.existingRecoveryDays}`,
     );
+  }
 
     calculateStreak();
     const streakMs = user?.streak?.start ? Date.now() - user.streak.start : 0;
@@ -245,7 +247,7 @@ function DashboardContent() {
             <TouchableOpacity
               onPress={() => {
                 if (!buttonConfig.disabled) {
-                  console.log("🔥 Starting daily challenge flow");
+                  if (__DEV__) console.log("🔥 Starting daily challenge flow");
                   router.push("/(daily-challenge)/intro");
                 }
               }}

@@ -5,7 +5,7 @@ export const uploadProfileImage = async (
   userId: string,
 ): Promise<string> => {
   try {
-    console.log("Starting image upload...", { uri, userId });
+    if (__DEV__) console.log("Starting image upload...", { uri, userId });
 
     // Create a unique filename
     const filename = `profile-images/${userId}/${Date.now()}.jpg`;
@@ -14,12 +14,12 @@ export const uploadProfileImage = async (
     const reference = storage().ref(filename);
 
     // Upload file
-    console.log("Uploading to:", filename);
+    if (__DEV__) console.log("Uploading to:", filename);
     await reference.putFile(uri);
 
     // Get download URL
     const downloadURL = await reference.getDownloadURL();
-    console.log("Upload successful, URL:", downloadURL);
+    if (__DEV__) console.log("Upload successful, URL:", downloadURL);
 
     return downloadURL;
   } catch (error) {

@@ -128,11 +128,11 @@ export default function AccountSettings() {
                   onPress: async () => {
                     try {
                       const res = await api({ endpoint: "user-deleteAccount" });
-                      console.log("deleteAccount result:", res);
+                      if (__DEV__) console.log("deleteAccount result:", res);
                       await signOut();
                       router.replace("/");
                     } catch (e) {
-                      console.log("deleteAccount error:", e);
+                      if (__DEV__) console.log("deleteAccount error:", e);
                       Alert.alert(
                         "Error",
                         (e as any)?.message ??

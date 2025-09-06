@@ -133,7 +133,7 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
           { dailyChallenge: defaultDailyChallengeData },
           { merge: true },
         );
-        console.log("✅ Initialized dailyChallenge for new user");
+        if (__DEV__) console.log("✅ Initialized dailyChallenge for new user");
       } else if (!("lastAppOpenDate" in user.dailyChallenge)) {
         // Existing user - add missing field
         const updatedData = {
@@ -146,24 +146,24 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
           { dailyChallenge: updatedData },
           { merge: true },
         );
-        console.log(
-          "🔧 Added lastAppOpenDate to existing user's dailyChallenge",
-        );
+        if (__DEV__) console.log("🔧 Added lastAppOpenDate to existing user's dailyChallenge");
       }
     };
 
-    console.log("🔄 Syncing local state with database state...");
-    console.log("User tier from database:", user.tier);
+    if (__DEV__) {
+      console.log("🔄 Syncing local state with database state...");
+      console.log("User tier from database:", user.tier);
+    }
 
     // ✅ STEP 1: Initialize onboarding state based on user's tier from database
     if (user.tier === 0) {
       // User hasn't completed onboarding yet
-      console.log("Setting onboarding state to 0 (not complete)");
+      if (__DEV__) console.log("Setting onboarding state to 0 (not complete)");
       setOnboarding(0);
       setPostOnboarding(0);
     } else {
       // User has completed onboarding (tier > 0)
-      console.log("Setting onboarding state to DONE (complete)");
+      if (__DEV__) console.log("Setting onboarding state to DONE (complete)");
       setOnboarding("DONE");
       setPostOnboarding("DONE");
     }
@@ -183,10 +183,12 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
         const updatedUser = doc.data() as User | undefined;
         if (!updatedUser) return;
 
-        console.log("📡 Real-time user update received");
-        console.log(
-          `🔍 Firebase streak.start: ${updatedUser.streak?.start} (${updatedUser.streak?.start ? new Date(updatedUser.streak.start).toISOString() : "undefined"})`,
-        );
+        if (__DEV__) {
+          console.log("📡 Real-time user update received");
+          console.log(
+            `🔍 Firebase streak.start: ${updatedUser.streak?.start} (${updatedUser.streak?.start ? new Date(updatedUser.streak.start).toISOString() : "undefined"})`,
+          );
+        }
 
         setUser(updatedUser);
 
@@ -221,13 +223,15 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
     }
     current[keys[keys.length - 1]] = value;
 
-    console.log(`🔧 updateUser: ${dotkey} =`, value);
-    console.log(`📝 Update object:`, updateObject);
+    if (__DEV__) {
+      console.log(`🔧 updateUser: ${dotkey} =`, value);
+      console.log(`📝 Update object:`, updateObject);
+    }
 
     // Use merge: true to avoid overwriting other fields
     await setDoc(doc(db, "users", user.uid), updateObject, { merge: true });
 
-    console.log(`✅ Firebase merge completed for ${dotkey}`);
+    if (__DEV__) console.log(`✅ Firebase merge completed for ${dotkey}`);
 
     // Don't update local state - let the real-time listener handle it
     // This prevents race conditions and ensures we always have the latest data

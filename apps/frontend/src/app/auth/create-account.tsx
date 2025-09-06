@@ -9,7 +9,7 @@ import * as WebBrowser from "expo-web-browser";
 import { TouchableOpacity } from "react-native";
 
 export default function CreateAccountScreen() {
-  const { signUp, user } = useAuthContext();
+  const { signUp, user, updateUser } = useAuthContext();
   const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -110,6 +110,11 @@ export default function CreateAccountScreen() {
                   username: username.trim(),
                   firstName: firstName.trim() || null,
                 },
+              });
+              await updateUser("legal", {
+                tosAccepted: true,
+                privacyAccepted: true,
+                acceptedAt: Date.now(),
               });
               router.replace("/onboarding");
             } catch (e: any) {

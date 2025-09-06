@@ -79,7 +79,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       });
 
       if (!result.canceled) {
-        console.log("📸 Photo taken:", result.assets[0].uri);
+        if (__DEV__) console.log("📸 Photo taken:", result.assets[0].uri);
         setProfileImageUri(result.assets[0].uri);
       }
     } catch (error) {
@@ -101,7 +101,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       });
 
       if (!result.canceled) {
-        console.log("🖼️ Image selected:", result.assets[0].uri);
+        if (__DEV__) console.log("🖼️ Image selected:", result.assets[0].uri);
         setProfileImageUri(result.assets[0].uri);
       }
     } catch (error) {
@@ -113,23 +113,23 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
   const handleSave = async () => {
     if (!user) return;
 
-    console.log("💾 Saving profile changes...");
+    if (__DEV__) console.log("💾 Saving profile changes...");
     setLoading(true);
 
     try {
       // Test just username first
       if (username !== user.displayName && username.trim()) {
-        console.log("Updating username to:", username);
+        if (__DEV__) console.log("Updating username to:", username);
         await updateUser("displayName", username);
-        console.log("✅ Username updated");
+        if (__DEV__) console.log("✅ Username updated");
       }
 
       // Upload and persist profile image if changed
       if (profileImageUri && profileImageUri !== user.photoURL) {
-        console.log("📤 Uploading profile image:", profileImageUri);
+        if (__DEV__) console.log("📤 Uploading profile image:", profileImageUri);
         const downloadURL = await uploadProfileImage(profileImageUri, user.uid);
         await updateUser("photoURL", downloadURL);
-        console.log("✅ Photo URL saved to user document");
+        if (__DEV__) console.log("✅ Photo URL saved to user document");
       }
 
       Alert.alert("Success", "Profile updated successfully!");
@@ -143,7 +143,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
   };
 
   const handleCancel = () => {
-    console.log("❌ Cancelled profile edit");
+    if (__DEV__) console.log("❌ Cancelled profile edit");
     // Reset to original values
     setUsername(user?.displayName || "");
     setProfileImageUri(user?.photoURL || null);
