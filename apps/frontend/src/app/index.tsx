@@ -20,42 +20,42 @@ export default function SignIn() {
       <View className="flex-1 w-full items-center justify-center">
         <Hover top={-20} left={-100}>
           <Face
-            name="James"
+            name="Scott"
             streak={7}
             src={require("@/assets/images/faces/face-0.jpg")}
           />
         </Hover>
         <Hover top={10} left={60}>
           <Face
-            name="Jerome"
+            name="Scott"
             streak={16}
             src={require("@/assets/images/faces/face-1.jpg")}
           />
         </Hover>
         <Hover top={-10} left={220}>
           <Face
-            name="Jed"
+            name="Nathan"
             streak={86}
             src={require("@/assets/images/faces/face-2.jpg")}
           />
         </Hover>
         <Hover top={200} left={0}>
           <Face
-            name="Jeff"
+            name="Robert"
             streak={32}
             src={require("@/assets/images/faces/face-3.jpg")}
           />
         </Hover>
         <Hover top={180} left={160}>
           <Face
-            name="James"
+            name="Navin"
             streak={32}
             src={require("@/assets/images/faces/face-4.jpg")}
           />
         </Hover>
         <Hover top={160} left={320}>
           <Face
-            name="Jake"
+            name="Junior"
             streak={32}
             src={require("@/assets/images/faces/face-4.jpg")}
           />
