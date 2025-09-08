@@ -27,7 +27,7 @@ export default function SignIn() {
         </Hover>
         <Hover top={10} left={60}>
           <Face
-            name="Scott"
+            name="Mark"
             streak={16}
             src={require("@/assets/images/faces/face-1.jpg")}
           />
@@ -41,9 +41,9 @@ export default function SignIn() {
         </Hover>
         <Hover top={200} left={0}>
           <Face
-            name="Robert"
-            streak={32}
-            src={require("@/assets/images/faces/face-3.jpg")}
+            name="Natalie"
+            streak={40}
+            src={require("@/assets/images/faces/face-10.jpg")}
           />
         </Hover>
         <Hover top={180} left={160}>
@@ -55,9 +55,9 @@ export default function SignIn() {
         </Hover>
         <Hover top={160} left={320}>
           <Face
-            name="Junior"
-            streak={32}
-            src={require("@/assets/images/faces/face-4.jpg")}
+            name="Jasmine"
+            streak={12}
+            src={require("@/assets/images/faces/face-8.jpg")}
           />
         </Hover>
       </View>

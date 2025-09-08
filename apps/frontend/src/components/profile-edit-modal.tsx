@@ -229,15 +229,12 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                 </View>
               </View>
 
-              {/* Debug info - remove later */}
-              <View className="mt-4 opacity-50">
-                <Text className="text-xs">
-                  Debug: User ID: {user?.uid?.slice(0, 8)}...
-                </Text>
-                <Text className="text-xs">
-                  Current username: {user?.displayName || "none"}
-                </Text>
-              </View>
+              {__DEV__ && (
+                <View className="mt-4 opacity-50">
+                  <Text className="text-xs">Debug: User ID: {user?.uid?.slice(0, 8)}...</Text>
+                  <Text className="text-xs">Current username: {user?.displayName || "none"}</Text>
+                </View>
+              )}
             </View>
           </View>
         </KeyboardAvoidingView>
