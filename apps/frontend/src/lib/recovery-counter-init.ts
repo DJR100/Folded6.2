@@ -16,7 +16,9 @@ export function initializeRecoveryCounters(existingDays: number) {
   if (__DEV__) {
     console.log("🔧 Recovery Counter Initialization Debug:");
     console.log(`  📅 Existing days: ${existingDays}`);
-    console.log(`  ⏰ Current timestamp: ${now} (${new Date(now).toISOString()})`);
+    console.log(
+      `  ⏰ Current timestamp: ${now} (${new Date(now).toISOString()})`,
+    );
     console.log(
       `  ⏰ Adjusted start time: ${adjustedStartTime} (${new Date(adjustedStartTime).toISOString()})`,
     );

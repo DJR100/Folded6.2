@@ -89,7 +89,8 @@ export default function Onboarding() {
               />
             </View>
             <Text variant="p" className="text-center">
-              People like James need support. Join the community to help them out.
+              People like James need support. Join the community to help them
+              out.
             </Text>
           </View>
 

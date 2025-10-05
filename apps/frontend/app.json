@@ -9,13 +9,14 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.folded.so",
-      "buildNumber": "2",
+      "buildNumber": "3",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "Folded needs access to your camera.",
-        "NSMicrophoneUsageDescription": "Folded needs access to your microphone."
+        "NSMicrophoneUsageDescription": "Folded needs access to your microphone.",
+        "UIDeviceFamily": [1]
       },
       "googleServicesFile": "./GoogleService-Info.plist"
     },

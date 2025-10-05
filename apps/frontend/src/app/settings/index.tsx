@@ -5,7 +5,13 @@ import * as WebBrowser from "expo-web-browser";
 import * as Notifications from "expo-notifications";
 import * as Application from "expo-application";
 import React, { useState } from "react";
-import { Platform, Switch, TouchableOpacity, Linking, Alert } from "react-native";
+import {
+  Platform,
+  Switch,
+  TouchableOpacity,
+  Linking,
+  Alert,
+} from "react-native";
 
 import { Text, View } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
@@ -24,7 +30,12 @@ async function scheduleDailyReminder(hour = 21, minute = 0) {
   await Notifications.cancelAllScheduledNotificationsAsync();
   await Notifications.scheduleNotificationAsync({
     content: { title: "Daily check-in", body: "Stay on track today." },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.CALENDAR, hour, minute, repeats: true },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+      hour,
+      minute,
+      repeats: true,
+    },
   });
 }
 
@@ -46,7 +57,10 @@ export default function SettingsRoot() {
       <View className="px-4">
         <Text className="opacity-70 mb-2">FEEDBACK</Text>
 
-        <TouchableOpacity className="bg-white/5 rounded-xl px-4 py-4 mb-3" onPress={() => Alert.alert("Coming to the app store soon.")}>
+        <TouchableOpacity
+          className="bg-white/5 rounded-xl px-4 py-4 mb-3"
+          onPress={() => Alert.alert("Coming to the app store soon.")}
+        >
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">
               <Feather name="star" size={16} color="white" />
@@ -56,8 +70,9 @@ export default function SettingsRoot() {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity className="bg-white/5 rounded-xl px-4 py-4 mb-3"
-        onPress={() => WebBrowser.openBrowserAsync(WHATSAPP_GROUP_URL)}
+        <TouchableOpacity
+          className="bg-white/5 rounded-xl px-4 py-4 mb-3"
+          onPress={() => WebBrowser.openBrowserAsync(WHATSAPP_GROUP_URL)}
         >
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">

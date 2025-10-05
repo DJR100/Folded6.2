@@ -70,7 +70,8 @@ export function useDailyChallenge(): UseDailyChallengeReturn {
     const hasNoLastOpen = !dailyChallenge.lastAppOpenDate;
 
     if (hasNoLastOpen) {
-      if (__DEV__) console.log("✅ isFirstOpenToday: true (no lastAppOpenDate)");
+      if (__DEV__)
+        console.log("✅ isFirstOpenToday: true (no lastAppOpenDate)");
       return true;
     }
 
@@ -82,12 +83,13 @@ export function useDailyChallenge(): UseDailyChallengeReturn {
       lastOpen.getMonth() !== today.getMonth() ||
       lastOpen.getFullYear() !== today.getFullYear();
 
-    if (__DEV__) console.log("🔍 isFirstOpenToday check:", {
-      lastAppOpenDate: dailyChallenge.lastAppOpenDate,
-      lastOpenFormatted: lastOpen.toLocaleDateString(),
-      todayFormatted: today.toLocaleDateString(),
-      isDifferentDay,
-    });
+    if (__DEV__)
+      console.log("🔍 isFirstOpenToday check:", {
+        lastAppOpenDate: dailyChallenge.lastAppOpenDate,
+        lastOpenFormatted: lastOpen.toLocaleDateString(),
+        todayFormatted: today.toLocaleDateString(),
+        isDifferentDay,
+      });
 
     return isDifferentDay;
   }, [dailyChallenge.lastAppOpenDate]);
@@ -142,7 +144,11 @@ export function useDailyChallenge(): UseDailyChallengeReturn {
       dailyChallenge.currentDayState === "pending" &&
       (user?.tier ?? 0) > 0;
 
-    if (__DEV__) console.log("🔍 shouldAutoLaunch calculation:", { ...conditions, finalResult: result });
+    if (__DEV__)
+      console.log("🔍 shouldAutoLaunch calculation:", {
+        ...conditions,
+        finalResult: result,
+      });
 
     return result;
   }, [isFirstOpenToday, dailyChallenge.currentDayState, user?.tier]);
@@ -173,7 +179,8 @@ export function useDailyChallenge(): UseDailyChallengeReturn {
       };
 
       await updateUser("dailyChallenge", updatedData);
-      if (__DEV__) console.log("🔧 DEV: Daily challenge reset to pending state");
+      if (__DEV__)
+        console.log("🔧 DEV: Daily challenge reset to pending state");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to reset daily challenge",
@@ -217,7 +224,8 @@ export function useDailyChallenge(): UseDailyChallengeReturn {
       // Analytics for streak reset
       if (__DEV__) {
         if (resetStreak) console.log("🔥 Streak reset due to missed day");
-        if (shouldResetWeek) console.log(" New week started - resetting week progress");
+        if (shouldResetWeek)
+          console.log(" New week started - resetting week progress");
       }
     } catch (err) {
       setError(
@@ -263,10 +271,11 @@ export function useDailyChallenge(): UseDailyChallengeReturn {
         await updateUser("dailyChallenge", updatedData);
 
         // TODO: Fire analytics event - daily_challenge_completed
-        if (__DEV__) console.log("✅ Daily challenge completed", {
-          streakCount: updatedData.streakCount,
-          photoSource: photo?.type,
-        });
+        if (__DEV__)
+          console.log("✅ Daily challenge completed", {
+            streakCount: updatedData.streakCount,
+            photoSource: photo?.type,
+          });
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Failed to complete challenge",

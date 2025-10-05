@@ -29,7 +29,8 @@ export const useNotifications = () => {
 
     // Background/quit state (Android)
     messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-      if (__DEV__) console.log("Message handled in the background!", remoteMessage);
+      if (__DEV__)
+        console.log("Message handled in the background!", remoteMessage);
     });
   }, []);
 

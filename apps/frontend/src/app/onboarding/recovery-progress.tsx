@@ -26,7 +26,9 @@ export default function RecoveryProgress() {
     const days = parseInt(recoveryDays) || 0;
 
     if (__DEV__) {
-      console.log(`🚀 Starting recovery counter initialization with ${days} days`);
+      console.log(
+        `🚀 Starting recovery counter initialization with ${days} days`,
+      );
     }
 
     // Always initialize counters, even if days is 0
@@ -92,7 +94,8 @@ export default function RecoveryProgress() {
     if (__DEV__) console.log("🔧 Step 3: Setting existingRecoveryDays...");
     await updateUser("demographic.existingRecoveryDays", 0);
 
-    if (__DEV__) console.log("✅ Initialized all recovery counters for fresh start");
+    if (__DEV__)
+      console.log("✅ Initialized all recovery counters for fresh start");
 
     // Small delay to ensure Firestore sync
     await new Promise((resolve) => setTimeout(resolve, 500));

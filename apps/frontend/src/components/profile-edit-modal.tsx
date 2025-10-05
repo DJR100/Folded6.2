@@ -126,7 +126,8 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
 
       // Upload and persist profile image if changed
       if (profileImageUri && profileImageUri !== user.photoURL) {
-        if (__DEV__) console.log("📤 Uploading profile image:", profileImageUri);
+        if (__DEV__)
+          console.log("📤 Uploading profile image:", profileImageUri);
         const downloadURL = await uploadProfileImage(profileImageUri, user.uid);
         await updateUser("photoURL", downloadURL);
         if (__DEV__) console.log("✅ Photo URL saved to user document");
@@ -231,8 +232,12 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
 
               {__DEV__ && (
                 <View className="mt-4 opacity-50">
-                  <Text className="text-xs">Debug: User ID: {user?.uid?.slice(0, 8)}...</Text>
-                  <Text className="text-xs">Current username: {user?.displayName || "none"}</Text>
+                  <Text className="text-xs">
+                    Debug: User ID: {user?.uid?.slice(0, 8)}...
+                  </Text>
+                  <Text className="text-xs">
+                    Current username: {user?.displayName || "none"}
+                  </Text>
                 </View>
               )}
             </View>

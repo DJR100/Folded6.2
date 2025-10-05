@@ -15,9 +15,16 @@ function Digit({ d }: { d: string }) {
   return (
     <View
       className="mx-[2px] rounded-md items-center justify-center"
-      style={{ width: TILE_WIDTH, height: TILE_HEIGHT, backgroundColor: colors.accent }}
+      style={{
+        width: TILE_WIDTH,
+        height: TILE_HEIGHT,
+        backgroundColor: colors.accent,
+      }}
     >
-      <Text className="text-xl font-[Satoshi-Bold]" style={{ color: "#ffffff" }}>
+      <Text
+        className="text-xl font-[Satoshi-Bold]"
+        style={{ color: "#ffffff" }}
+      >
         {d}
       </Text>
     </View>
@@ -28,9 +35,20 @@ function Separator() {
   return (
     <View
       className="px-1"
-      style={{ height: TILE_HEIGHT, alignItems: "center", justifyContent: "center" }}
+      style={{
+        height: TILE_HEIGHT,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
-      <Text style={{ fontSize: 24, lineHeight: TILE_HEIGHT, opacity: 0.4, color: "#FFFFFF" }}>
+      <Text
+        style={{
+          fontSize: 24,
+          lineHeight: TILE_HEIGHT,
+          opacity: 0.4,
+          color: "#FFFFFF",
+        }}
+      >
         :
       </Text>
     </View>
@@ -40,7 +58,11 @@ function Separator() {
 function Segment({ digits, label }: { digits: string[]; label: string }) {
   return (
     <View className="items-center mx-1">
-      <View className="flex-row">{digits.map((d, i) => <Digit key={i} d={d} />)}</View>
+      <View className="flex-row">
+        {digits.map((d, i) => (
+          <Digit key={i} d={d} />
+        ))}
+      </View>
       <Text className="text-xs mt-1 opacity-70">{label}</Text>
     </View>
   );
@@ -171,7 +193,10 @@ export default function BetFreeTimer({
             </View>
           ) : (
             <View className="flex-row items-start justify-center">
-              <Segment digits={split(Math.floor(days / 30), 1)} label="Months" />
+              <Segment
+                digits={split(Math.floor(days / 30), 1)}
+                label="Months"
+              />
               <Separator />
               <Segment digits={split(days % 30, 2)} label="Days" />
               <Separator />
@@ -187,5 +212,3 @@ export default function BetFreeTimer({
     </TouchableOpacity>
   );
 }
-
-

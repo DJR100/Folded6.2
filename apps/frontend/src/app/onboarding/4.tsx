@@ -32,8 +32,8 @@ export default function Onboarding() {
       </Text> */}
       <Text variant="p">Please write a motivational message.</Text>
       <Text variant="p">
-        Your message will be sent to other recovering gamblers when we detect that they are at
-        risk of relapsing.
+        Your message will be sent to other recovering gamblers when we detect
+        that they are at risk of relapsing.
       </Text>
       {/* <Text variant="p" className="text-danger">
         You may not be granted access to the community if your message is

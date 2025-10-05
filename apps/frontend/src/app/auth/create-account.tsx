@@ -57,21 +57,27 @@ export default function CreateAccountScreen() {
         <View className="flex-row items-center gap-2 mt-2">
           <TouchableOpacity onPress={() => setAcceptedLegal((v) => !v)}>
             <View className="w-5 h-5 rounded-md border border-white/40 items-center justify-center">
-              {acceptedLegal && <Feather name="check" size={14} color="white" />}
+              {acceptedLegal && (
+                <Feather name="check" size={14} color="white" />
+              )}
             </View>
           </TouchableOpacity>
           <Text variant="sm" muted>
             By Signing up, you agree to our{" "}
             <Text
               className="text-accent underline"
-              onPress={() => WebBrowser.openBrowserAsync("https://folded.app/terms")}
+              onPress={() =>
+                WebBrowser.openBrowserAsync("https://folded.app/terms")
+              }
             >
               Terms of Service
             </Text>{" "}
             and{" "}
             <Text
               className="text-accent underline"
-              onPress={() => WebBrowser.openBrowserAsync("https://folded.app/privacy")}
+              onPress={() =>
+                WebBrowser.openBrowserAsync("https://folded.app/privacy")
+              }
             >
               Privacy Policy
             </Text>

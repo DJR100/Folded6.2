@@ -22,7 +22,9 @@ export default function Onboarding() {
     >
       <Text variant="p">You’ve just taken back control.</Text>
       <View className="h-2" />
-      <Text variant="p">You should feel proud for wanting to change your life.</Text>
+      <Text variant="p">
+        You should feel proud for wanting to change your life.
+      </Text>
       <View className="h-2" />
       <Text variant="p">The best time to invest in yourself is now.</Text>
     </OnboardingLayout>

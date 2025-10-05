@@ -146,7 +146,10 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
           { dailyChallenge: updatedData },
           { merge: true },
         );
-        if (__DEV__) console.log("🔧 Added lastAppOpenDate to existing user's dailyChallenge");
+        if (__DEV__)
+          console.log(
+            "🔧 Added lastAppOpenDate to existing user's dailyChallenge",
+          );
       }
     };
 

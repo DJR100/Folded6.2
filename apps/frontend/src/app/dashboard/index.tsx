@@ -122,19 +122,19 @@ function DashboardContent() {
     };
 
     // 🔍 ONE-TIME DEBUG: Log what we're working with (only once per user change)
-if (__DEV__) {
-    console.log("🎯 Dashboard Debug - User streak data:");
-    console.log(`  👤 User streak.start: ${user?.streak?.start}`);
-    console.log(
-      `  👤 User streak.start readable: ${user?.streak?.start ? new Date(user.streak.start).toISOString() : "undefined"}`,
-    );
-    console.log(
-      `  📊 Daily challenge streak count: ${dailyChallenge.streakCount}`,
-    );
-    console.log(
-      `  📊 Existing recovery days: ${user?.demographic?.existingRecoveryDays}`,
-    );
-  }
+    if (__DEV__) {
+      console.log("🎯 Dashboard Debug - User streak data:");
+      console.log(`  👤 User streak.start: ${user?.streak?.start}`);
+      console.log(
+        `  👤 User streak.start readable: ${user?.streak?.start ? new Date(user.streak.start).toISOString() : "undefined"}`,
+      );
+      console.log(
+        `  📊 Daily challenge streak count: ${dailyChallenge.streakCount}`,
+      );
+      console.log(
+        `  📊 Existing recovery days: ${user?.demographic?.existingRecoveryDays}`,
+      );
+    }
 
     calculateStreak();
     const streakMs = user?.streak?.start ? Date.now() - user.streak.start : 0;
@@ -244,47 +244,48 @@ if (__DEV__) {
           {/* Daily Challenge Button with updated styling */}
           <View className="w-full px-4 mt-3">
             <View>
-            <TouchableOpacity
-              onPress={() => {
-                if (!buttonConfig.disabled) {
-                  if (__DEV__) console.log("🔥 Starting daily challenge flow");
-                  router.push("/(daily-challenge)/intro");
-                }
-              }}
-              disabled={buttonConfig.disabled || isLoading}
-              className="w-full rounded-lg flex-row items-center justify-center"
-              style={{
-                height: 48,
-                backgroundColor:
-                  buttonConfig.backgroundColor ||
-                  (dailyChallenge.currentDayState === "skipped"
-                    ? "#F59E0B"
-                    : "#3DF08B"),
-                opacity: buttonConfig.buttonOpacity,
-                borderColor: buttonConfig.borderColor,
-                borderWidth: buttonConfig.borderWidth || 0,
-                // Add a subtle shadow for depth
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 2, // For Android
-              }}
-            >
-              <Text
-                className="font-medium text-center"
+              <TouchableOpacity
+                onPress={() => {
+                  if (!buttonConfig.disabled) {
+                    if (__DEV__)
+                      console.log("🔥 Starting daily challenge flow");
+                    router.push("/(daily-challenge)/intro");
+                  }
+                }}
+                disabled={buttonConfig.disabled || isLoading}
+                className="w-full rounded-lg flex-row items-center justify-center"
                 style={{
-                  color: buttonConfig.textColor,
-                  opacity: buttonConfig.textOpacity,
-                  // Add text shadow for the "shine through" effect
-                  textShadowColor: "rgba(0, 0, 0, 0.3)",
-                  textShadowOffset: { width: 0, height: 1 },
-                  textShadowRadius: 2,
+                  height: 48,
+                  backgroundColor:
+                    buttonConfig.backgroundColor ||
+                    (dailyChallenge.currentDayState === "skipped"
+                      ? "#F59E0B"
+                      : "#3DF08B"),
+                  opacity: buttonConfig.buttonOpacity,
+                  borderColor: buttonConfig.borderColor,
+                  borderWidth: buttonConfig.borderWidth || 0,
+                  // Add a subtle shadow for depth
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 2, // For Android
                 }}
               >
-                {isLoading ? "Loading..." : buttonConfig.text}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  className="font-medium text-center"
+                  style={{
+                    color: buttonConfig.textColor,
+                    opacity: buttonConfig.textOpacity,
+                    // Add text shadow for the "shine through" effect
+                    textShadowColor: "rgba(0, 0, 0, 0.3)",
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 2,
+                  }}
+                >
+                  {isLoading ? "Loading..." : buttonConfig.text}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
 
