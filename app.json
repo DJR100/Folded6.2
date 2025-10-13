@@ -7,8 +7,10 @@
     },
     "ios": {
       "bundleIdentifier": "y",
+      "supportsTablet": false,
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIDeviceFamily": [1]
       }
     }
   }
