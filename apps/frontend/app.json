@@ -14,8 +14,8 @@
       "buildNumber": "3",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "Folded needs access to your camera.",
-        "NSMicrophoneUsageDescription": "Folded needs access to your microphone.",
+        "NSCameraUsageDescription": "Allow Folded to use the camera to customise your profile and complete daily challenges. Folded only reads the photos you select.",
+        "NSPhotoLibraryUsageDescription": "Allow Folded to access your photos to customise your profile and complete daily challenges. Folded only reads the photos you select.",
         "UIDeviceFamily": [1]
       },
       "googleServicesFile": "./GoogleService-Info.plist"
@@ -27,7 +27,6 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA"
       ]
     },
@@ -50,15 +49,14 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "Allow Folded to access your photos to customise your profile and complete daily challenges. Folded only reads the photos you select."
         }
       ],
       [
         "react-native-vision-camera",
         {
-          "cameraPermissionText": "Folded needs access to your camera.",
-          "enableMicrophonePermission": true,
-          "microphonePermissionText": "Folded needs access to your microphone."
+          "cameraPermissionText": "Allow Folded to use the camera to customise your profile and complete daily challenges. Folded only reads the photos you select.",
+          "enableMicrophonePermission": false
         }
       ],
       "@react-native-firebase/app",

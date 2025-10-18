@@ -60,11 +60,9 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Folded needs access to your camera.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Folded needs access to your microphone.</string>
+    <string>Allow Folded to use the camera to customise your profile and complete daily challenges. Folded only reads the photos you select.</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>The app accesses your photos to let you share them with your friends.</string>
+    <string>Allow Folded to access your photos to customise your profile and complete daily challenges. Folded only reads the photos you select.</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
