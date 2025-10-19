@@ -21,6 +21,7 @@ import {
 } from "react";
 
 import { app, db } from "@/lib/firebase";
+import Purchases from "react-native-purchases";
 
 export const auth = initializeAuth(app);
 
@@ -210,6 +211,22 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
       snapshotListener();
     };
   }, [user?.uid, user?.tier]); // ✅ Also watch user.tier to refresh listener when onboarding completes
+
+  // Keep RevenueCat identity in sync with Firebase auth user
+  useEffect(() => {
+    const sync = async () => {
+      try {
+        if (user?.uid) {
+          await Purchases.logIn(user.uid);
+        } else {
+          await Purchases.logOut();
+        }
+      } catch (e) {
+        if (__DEV__) console.warn("RevenueCat ID sync failed", e);
+      }
+    };
+    sync();
+  }, [user?.uid]);
 
   const updateUser = async (dotkey: string, value: any) => {
     if (!user) return;

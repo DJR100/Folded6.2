@@ -5,7 +5,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { ScrollView } from "react-native";
 
 import { Guardian } from "@/components/guardian";
@@ -18,8 +18,7 @@ export default function Onboarding() {
   const { setOnboarding } = useAuthContext();
 
   const onComplete = async () => {
-    setOnboarding(8);
-    router.push("/onboarding/8");
+    router.push("/onboarding/paywall" as Href);
   };
 
   return (
