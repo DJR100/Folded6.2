@@ -23,17 +23,18 @@ import Purchases from "react-native-purchases";
 
 export default function Root() {
   const fontsLoaded = useFontLoad();
-  if (!fontsLoaded) return null;
-
-  // Initialize RevenueCat Purchases SDK
+  // Initialize RevenueCat Purchases SDK (keep hook order stable; guard on fontsLoaded)
   useEffect(() => {
+    if (!fontsLoaded) return;
     const key = process.env.EXPO_PUBLIC_RC_IOS_KEY;
     if (!key) {
       if (__DEV__) console.warn("Missing EXPO_PUBLIC_RC_IOS_KEY");
       return;
     }
     Purchases.configure({ apiKey: key });
-  }, []);
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) return null;
 
   return (
     <GestureHandlerRootView>
