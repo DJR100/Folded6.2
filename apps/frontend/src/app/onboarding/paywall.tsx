@@ -3,11 +3,15 @@ import Purchases, { PurchasesOffering, type CustomerInfo } from "react-native-pu
 import RevenueCatUI from "react-native-purchases-ui";
 import { router } from "expo-router";
 import { Button, View, Text } from "@/components/ui";
+import { StatusBar, StyleSheet, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function OnboardingPaywall() {
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  
 
   useEffect(() => {
     let isMounted = true;
@@ -50,18 +54,35 @@ export default function OnboardingPaywall() {
   }
 
   return (
-    <RevenueCatUI.Paywall
-      options={{ offering }}
-      onPurchaseCompleted={({ customerInfo }) => {
-        const hasPro = !!customerInfo.entitlements.active["pro"];
-        if (hasPro) router.replace("/onboarding/8");
-      }}
-      onRestoreCompleted={({ customerInfo }) => {
-        const hasPro = !!customerInfo.entitlements.active["pro"];
-        if (hasPro) router.replace("/onboarding/8");
-      }}
-      onPurchaseError={({ error }) => { if (__DEV__) console.warn(error); }}
-      onDismiss={() => router.back()}
-    />
+    <SafeAreaView
+      edges={["left", "right"]}
+      style={[StyleSheet.absoluteFillObject, { backgroundColor: "#000" }]}
+    >
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <RevenueCatUI.Paywall
+        options={{ offering, displayCloseButton: false }}
+        onPurchaseCompleted={({ customerInfo }) => {
+          const hasPro = !!customerInfo.entitlements.active["pro"];
+          if (hasPro) router.replace("/onboarding/8");
+        }}
+        onRestoreCompleted={({ customerInfo }) => {
+          const hasPro = !!customerInfo.entitlements.active["pro"];
+          if (hasPro) router.replace("/onboarding/8");
+        }}
+        onPurchaseError={({ error }) => { if (__DEV__) console.warn(error); }}
+      />
+
+      {/* Custom close button overlay in the extreme top-right (partially under status icons) */}
+      <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={() => router.back()}
+          style={{ position: "absolute", top: 6, right: 8, padding: 10 }}
+          hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+        >
+          <AntDesign name="close" size={22} color="#FFFFFFCC" />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }

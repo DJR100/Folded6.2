@@ -27,6 +27,13 @@ export default function OnboardingLayout() {
       <Stack.Screen name="5" />
       <Stack.Screen name="6" />
       <Stack.Screen name="7" />
+      <Stack.Screen
+        name="paywall"
+        options={{
+          headerShown: false,
+          presentation: "fullScreenModal",
+        }}
+      />
       <Stack.Screen name="8" />
     </Stack>
   );
