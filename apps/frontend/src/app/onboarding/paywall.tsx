@@ -11,7 +11,17 @@ export default function OnboardingPaywall() {
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
-  
+ 
+  // If already entitled, skip forward to step 8 immediately
+  useEffect(() => {
+    Purchases.getCustomerInfo()
+      .then((info) => {
+        if (info.entitlements.active["pro"]) {
+          router.replace("/onboarding/8");
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
