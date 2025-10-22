@@ -119,6 +119,19 @@ export default function SettingsRoot() {
 
         <Text className="opacity-70 mb-2">ACCOUNT</Text>
 
+        <TouchableOpacity
+          className="bg-white/5 rounded-xl px-4 py-4 mb-3"
+          onPress={() => router.push("/paywall")}
+        >
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center gap-3">
+              <Feather name="credit-card" size={16} color="white" />
+              <Text className="text-white">Subscribe</Text>
+            </View>
+            <ChevronRight />
+          </View>
+        </TouchableOpacity>
+
         {/* Notifications row stays as-is (no chevron) */}
         <View className="bg-white/5 rounded-xl px-4 py-4 mb-3 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3">

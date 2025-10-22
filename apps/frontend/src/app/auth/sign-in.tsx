@@ -5,7 +5,7 @@ import { Button, Input, Text, View } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
 
 export default function SignInScreen() {
-  const { signIn, user } = useAuthContext();
+  const { signIn, signUp, user } = useAuthContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -40,7 +40,22 @@ export default function SignInScreen() {
           variant="accent"
           text="Sign In"
           onPress={async () => {
-            await signIn(email.trim(), password);
+            const e = email.trim();
+            try {
+              await signIn(e, password);
+            } catch (err: any) {
+              const code: string = err?.code || err?.message || "";
+              const isDemoEmail = e.toLowerCase() === "test1234@test.com";
+              if (isDemoEmail && code.includes("user-not-found")) {
+                try {
+                  await signUp(e, password);
+                } catch (inner: any) {
+                  alert(inner?.message || "Could not create demo account. Try again.");
+                }
+              } else {
+                alert(err?.message || "Sign in failed. Please check your credentials.");
+              }
+            }
           }}
         />
 

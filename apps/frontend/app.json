@@ -11,7 +11,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.folded.so",
-      "buildNumber": "3",
+      "buildNumber": "11",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "Allow Folded to use the camera to customise your profile and complete daily challenges. Folded only reads the photos you select.",

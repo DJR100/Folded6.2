@@ -21,15 +21,8 @@ export function StreakTracker({
           </Text>
         </View>
 
-        {/* Right side - Info icon aligned with Sunday label center */}
-        <View style={{ marginRight: 4 }}>
-          <AntDesign
-            name="infocirlceo"
-            size={16}
-            color="white"
-            style={{ opacity: 0.6 }}
-          />
-        </View>
+        {/* Right side intentionally left empty (removed info icon) */}
+        <View style={{ marginRight: 4 }} />
       </View>
 
       {/* Day-by-Day Tracker Row - extracted from profile.tsx lines 103-187 */}
