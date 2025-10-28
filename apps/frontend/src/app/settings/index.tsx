@@ -121,7 +121,7 @@ export default function SettingsRoot() {
 
         <TouchableOpacity
           className="bg-white/5 rounded-xl px-4 py-4 mb-3"
-          onPress={() => router.push("/paywall")}
+          onPress={() => router.push({ pathname: "/paywall", params: { source: "settings" } })}
         >
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">

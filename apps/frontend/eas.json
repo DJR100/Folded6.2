@@ -8,19 +8,22 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_RC_IOS_KEY": "appl_srziEcfuCoKLssNrNZdBUlpNTgm"
+        "EXPO_PUBLIC_RC_IOS_KEY": "appl_srziEcfuCoKLssNrNZdBUlpNTgm",
+        "EXPO_PUBLIC_RC_ENTITLEMENT": "Pro"
       }
     },
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_RC_IOS_KEY": "appl_srziEcfuCoKLssNrNZdBUlpNTgm"
+        "EXPO_PUBLIC_RC_IOS_KEY": "appl_srziEcfuCoKLssNrNZdBUlpNTgm",
+        "EXPO_PUBLIC_RC_ENTITLEMENT": "Pro"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_RC_IOS_KEY": "appl_srziEcfuCoKLssNrNZdBUlpNTgm"
+        "EXPO_PUBLIC_RC_IOS_KEY": "appl_srziEcfuCoKLssNrNZdBUlpNTgm",
+        "EXPO_PUBLIC_RC_ENTITLEMENT": "Pro"
       }
     }
   },
