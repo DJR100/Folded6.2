@@ -41,6 +41,7 @@ export default function DailyChallengeLayout() {
         <View
           className="flex-1 bg-background"
           style={{
+            paddingTop: insets.top,
             paddingBottom: insets.bottom, // Keep bottom safe area for home indicator
           }}
         >

@@ -4,7 +4,7 @@ import RevenueCatUI from "react-native-purchases-ui";
 import { router, useLocalSearchParams } from "expo-router";
 import { Button, View, Text } from "@/components/ui";
 import { StatusBar, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
 import { RC_ENTITLEMENT_ID } from "@/lib/revenuecat";
 
@@ -13,6 +13,7 @@ export default function OnboardingPaywall() {
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const insets = useSafeAreaInsets();
  
   // If already entitled, skip forward to step 8 immediately
   useEffect(() => {
@@ -147,7 +148,7 @@ export default function OnboardingPaywall() {
         <TouchableOpacity
           accessibilityRole="button"
           onPress={() => router.back()}
-          style={{ position: "absolute", top: 6, right: 8, padding: 10 }}
+          style={{ position: "absolute", top: insets.top + 6, right: 8, padding: 10 }}
           hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
         >
           <AntDesign name="close" size={22} color="#FFFFFFCC" />

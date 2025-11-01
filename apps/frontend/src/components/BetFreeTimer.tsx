@@ -3,27 +3,25 @@ import { TouchableOpacity } from "react-native";
 
 import { Text, View } from "@/components/ui";
 import { colors } from "@/constants/colors";
-
-const TILE_WIDTH = 28;
-const TILE_HEIGHT = 38;
+import { useResponsive } from "@/lib/responsive";
 
 function split(value: number, min = 2) {
   return Math.max(0, value).toString().padStart(min, "0").split("");
 }
 
-function Digit({ d }: { d: string }) {
+function Digit({ d, tileWidth, tileHeight, digitFontSize }: { d: string; tileWidth: number; tileHeight: number; digitFontSize: number }) {
   return (
     <View
       className="mx-[2px] rounded-md items-center justify-center"
       style={{
-        width: TILE_WIDTH,
-        height: TILE_HEIGHT,
+        width: tileWidth,
+        height: tileHeight,
         backgroundColor: colors.accent,
       }}
     >
       <Text
-        className="text-xl font-[Satoshi-Bold]"
-        style={{ color: "#ffffff" }}
+        className="font-[Satoshi-Bold]"
+        style={{ color: "#ffffff", fontSize: digitFontSize }}
       >
         {d}
       </Text>
@@ -31,20 +29,20 @@ function Digit({ d }: { d: string }) {
   );
 }
 
-function Separator() {
+function Separator({ tileHeight, separatorFontSize }: { tileHeight: number; separatorFontSize: number }) {
   return (
     <View
       className="px-1"
       style={{
-        height: TILE_HEIGHT,
+        height: tileHeight,
         alignItems: "center",
         justifyContent: "center",
       }}
     >
       <Text
         style={{
-          fontSize: 24,
-          lineHeight: TILE_HEIGHT,
+          fontSize: separatorFontSize,
+          lineHeight: tileHeight,
           opacity: 0.4,
           color: "#FFFFFF",
         }}
@@ -55,12 +53,12 @@ function Separator() {
   );
 }
 
-function Segment({ digits, label }: { digits: string[]; label: string }) {
+function Segment({ digits, label, tileWidth, tileHeight, digitFontSize }: { digits: string[]; label: string; tileWidth: number; tileHeight: number; digitFontSize: number }) {
   return (
     <View className="items-center mx-1">
       <View className="flex-row">
         {digits.map((d, i) => (
-          <Digit key={i} d={d} />
+          <Digit key={i} d={d} tileWidth={tileWidth} tileHeight={tileHeight} digitFontSize={digitFontSize} />
         ))}
       </View>
       <Text className="text-xs mt-1 opacity-70">{label}</Text>
@@ -73,6 +71,11 @@ export default function BetFreeTimer({
 }: {
   startTimestampMs: number | null | undefined;
 }) {
+  const { ms } = useResponsive();
+  const TILE_WIDTH = ms(28);
+  const TILE_HEIGHT = ms(38);
+  const DIGIT_FONT = ms(18);
+  const SEP_FONT = ms(22);
   const [now, setNow] = useState(Date.now());
   const [expanded, setExpanded] = useState(false);
   useEffect(() => {
@@ -115,20 +118,20 @@ export default function BetFreeTimer({
     if (totalSeconds < 24 * 3600) {
       return (
         <View className="flex-row items-start justify-center">
-          <Segment digits={split(hours, 2)} label="Hours" />
-          <Separator />
-          <Segment digits={split(minutes, 2)} label="Minutes" />
-          <Separator />
-          <Segment digits={split(seconds, 2)} label="Seconds" />
+          <Segment digits={split(hours, 2)} label="Hours" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+          <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+          <Segment digits={split(minutes, 2)} label="Minutes" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+          <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+          <Segment digits={split(seconds, 2)} label="Seconds" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
         </View>
       );
     }
     if (days < 7) {
       return (
         <View className="flex-row items-start justify-center">
-          <Segment digits={split(days, 2)} label="Days" />
-          <Separator />
-          <Segment digits={split(hours, 2)} label="Hours" />
+          <Segment digits={split(days, 2)} label="Days" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+          <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+          <Segment digits={split(hours, 2)} label="Hours" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
         </View>
       );
     }
@@ -137,9 +140,9 @@ export default function BetFreeTimer({
       const remDays = days % 7;
       return (
         <View className="flex-row items-start justify-center">
-          <Segment digits={split(weeks, 1)} label="Weeks" />
-          <Separator />
-          <Segment digits={split(remDays, 2)} label="Days" />
+          <Segment digits={split(weeks, 1)} label="Weeks" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+          <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+          <Segment digits={split(remDays, 2)} label="Days" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
         </View>
       );
     }
@@ -147,9 +150,9 @@ export default function BetFreeTimer({
     const remDays = days % 30;
     return (
       <View className="flex-row items-start justify-center">
-        <Segment digits={split(months, 1)} label="Months" />
-        <Separator />
-        <Segment digits={split(remDays, 2)} label="Days" />
+        <Segment digits={split(months, 1)} label="Months" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+        <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+        <Segment digits={split(remDays, 2)} label="Days" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
       </View>
     );
   };
@@ -165,44 +168,47 @@ export default function BetFreeTimer({
         <View>
           {totalSeconds < 24 * 3600 ? (
             <View className="flex-row items-start justify-center">
-              <Segment digits={split(hours, 2)} label="Hours" />
-              <Separator />
-              <Segment digits={split(minutes, 2)} label="Minutes" />
-              <Separator />
-              <Segment digits={split(seconds, 2)} label="Seconds" />
+              <Segment digits={split(hours, 2)} label="Hours" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(minutes, 2)} label="Minutes" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(seconds, 2)} label="Seconds" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
             </View>
           ) : days < 7 ? (
             <View className="flex-row items-start justify-center">
-              <Segment digits={split(days, 2)} label="Days" />
-              <Separator />
-              <Segment digits={split(hours, 2)} label="Hours" />
-              <Separator />
-              <Segment digits={split(minutes, 2)} label="Minutes" />
-              <Separator />
-              <Segment digits={split(seconds, 2)} label="Seconds" />
+              <Segment digits={split(days, 2)} label="Days" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(hours, 2)} label="Hours" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(minutes, 2)} label="Minutes" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(seconds, 2)} label="Seconds" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
             </View>
           ) : days < 30 ? (
             <View className="flex-row items-start justify-center">
-              <Segment digits={split(Math.floor(days / 7), 1)} label="Weeks" />
-              <Separator />
-              <Segment digits={split(days % 7, 2)} label="Days" />
-              <Separator />
-              <Segment digits={split(minutes, 2)} label="Minutes" />
-              <Separator />
-              <Segment digits={split(seconds, 2)} label="Seconds" />
+              <Segment digits={split(Math.floor(days / 7), 1)} label="Weeks" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(days % 7, 2)} label="Days" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(minutes, 2)} label="Minutes" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(seconds, 2)} label="Seconds" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
             </View>
           ) : (
             <View className="flex-row items-start justify-center">
               <Segment
                 digits={split(Math.floor(days / 30), 1)}
                 label="Months"
+                tileWidth={TILE_WIDTH}
+                tileHeight={TILE_HEIGHT}
+                digitFontSize={DIGIT_FONT}
               />
-              <Separator />
-              <Segment digits={split(days % 30, 2)} label="Days" />
-              <Separator />
-              <Segment digits={split(minutes, 2)} label="Minutes" />
-              <Separator />
-              <Segment digits={split(seconds, 2)} label="Seconds" />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(days % 30, 2)} label="Days" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(minutes, 2)} label="Minutes" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
+              <Separator tileHeight={TILE_HEIGHT} separatorFontSize={SEP_FONT} />
+              <Segment digits={split(seconds, 2)} label="Seconds" tileWidth={TILE_WIDTH} tileHeight={TILE_HEIGHT} digitFontSize={DIGIT_FONT} />
             </View>
           )}
         </View>

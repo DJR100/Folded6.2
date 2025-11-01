@@ -3,12 +3,14 @@ import React from "react";
 import { TouchableOpacity } from "react-native";
 
 import { Button, Text, View } from "@/components/ui";
+import { useResponsive } from "@/lib/responsive";
 
 export function DailyChallengeIntro({
   onGetStarted,
   timeLeft,
   streakCount,
 }: DailyChallengeIntroProps) {
+  const { ms, isSmallPhone } = useResponsive();
   return (
     <View className="flex-1 bg-background">
       {/* Main Content Card - Removed shadow/shine effects */}
@@ -17,7 +19,6 @@ export function DailyChallengeIntro({
           className="rounded-3xl p-8 justify-center"
           style={{
             backgroundColor: "#8B5CF6", // Changed from green to purple
-            minHeight: 500, // Much larger
             flex: 1, // Take up more space
           }}
         >
@@ -28,8 +29,8 @@ export function DailyChallengeIntro({
             </Text>
 
             <Text
-              className="text-white text-2xl font-bold text-left mb-8 leading-tight"
-              style={{ lineHeight: 32 }}
+              className="text-white font-bold text-left mb-8 leading-tight"
+              style={{ fontSize: ms(isSmallPhone ? 18 : 22), lineHeight: ms(isSmallPhone ? 26 : 32) }}
             >
               Answer the{"\n"}following question{"\n"}today.
             </Text>
@@ -38,12 +39,21 @@ export function DailyChallengeIntro({
           {/* Centrally aligned timer and button section */}
           <View className="items-center">
             {/* Countdown Timer */}
-            <Text
-              className="text-white text-4xl font-bold mb-2"
-              style={{ fontFamily: "monospace" }}
-            >
-              {timeLeft}
-            </Text>
+            {(() => {
+              const timerFontSize = ms(isSmallPhone ? 26 : 34);
+              const timerLineHeight = Math.ceil(timerFontSize * 1.2);
+              return (
+                <Text
+                  className="text-white font-bold mb-2"
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.75}
+                  style={{ fontFamily: "monospace", fontSize: timerFontSize, lineHeight: timerLineHeight }}
+                >
+                  {timeLeft}
+                </Text>
+              );
+            })()}
 
             <Text className="text-white text-sm mb-12 opacity-70">
               left to extend your {streakCount}-day streak!

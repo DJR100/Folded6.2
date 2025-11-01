@@ -8,6 +8,7 @@ import { Text, View } from "@/components/ui";
 import { useDailyChallengeContext } from "@/hooks/daily-challenge-context";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { logEvent } from "@/lib/analytics";
+import { useResponsive } from "@/lib/responsive";
 
 interface CongratulationsProps {
   onClose: () => void;
@@ -16,6 +17,7 @@ interface CongratulationsProps {
 export function Congratulations({ onClose }: CongratulationsProps) {
   const { user } = useAuthContext();
   const { dailyChallenge } = useDailyChallengeContext();
+  const { vw, ms } = useResponsive();
 
   const displayName = useMemo(
     () => user?.displayName || user?.email?.split("@")[0] || "User",
@@ -33,7 +35,8 @@ export function Congratulations({ onClose }: CongratulationsProps) {
   const isFirstDay = days === 1;
   const cardRef = useRef<any>(null);
   const [sharing, setSharing] = useState(false);
-  const CARD_SIZE = 250; // dp size of on-screen preview (output will be scaled up)
+  const CARD_SIZE = Math.min(vw(80), ms(320)); // responsive on-screen preview size
+  const CARD_INNER_MIN_HEIGHT = CARD_SIZE * 0.72; // tighten inner white card height
 
   const onShare = async () => {
     let method: "image" | "text" = "text";
@@ -105,11 +108,12 @@ export function Congratulations({ onClose }: CongratulationsProps) {
           className="rounded-3xl p-8 justify-center"
           style={{
             backgroundColor: "#8B5CF6",
-            minHeight: 500,
             flex: 1,
+            paddingTop: ms(40),
+            paddingBottom: ms(36),
           }}
         >
-          <View className="mb-8 items-center">
+          <View className="mb-6 items-center">
             <Text
               className="text-white text-2xl font-bold text-center leading-tight"
               style={{ lineHeight: 32 }}
@@ -127,7 +131,17 @@ export function Congratulations({ onClose }: CongratulationsProps) {
           </View>
 
           {/* Visual Preview Card (capturable) */}
-          <View className="items-center mb-6">
+          <View
+            className="items-center mb-3"
+            style={{
+              // Pull the buttons upward by reclaiming part of the unused space
+              // at the bottom of the square preview (without affecting capture)
+              marginBottom: -Math.min(
+                (CARD_SIZE - CARD_INNER_MIN_HEIGHT) * 0.5,
+                ms(40),
+              ),
+            }}
+          >
             <ViewShot
               ref={cardRef}
               options={{ format: "png", quality: 1, width: 1080, height: 1080 }}
@@ -139,15 +153,15 @@ export function Congratulations({ onClose }: CongratulationsProps) {
                   backgroundColor: "#FFFFFF",
                   position: "relative",
                   width: CARD_SIZE,
-                  height: CARD_SIZE,
+                  minHeight: CARD_INNER_MIN_HEIGHT,
                 }}
               >
                 {/* Small brand badge - top right */}
                 <View
                   style={{
                     position: "absolute",
-                    top: 10,
-                    right: 10,
+                    top: ms(8),
+                    right: ms(8),
                     opacity: 0.7,
                   }}
                 >
@@ -183,10 +197,7 @@ export function Congratulations({ onClose }: CongratulationsProps) {
                 </Text>
 
                 <View className="mt-4 items-center">
-                  <Text
-                    className="text-5xl font-extrabold"
-                    style={{ color: "#000000" }}
-                  >
+                  <Text className="font-extrabold" style={{ color: "#000000", fontSize: ms(36) }}>
                     {days}
                   </Text>
                   <Text
@@ -194,7 +205,7 @@ export function Congratulations({ onClose }: CongratulationsProps) {
                     style={{ color: "rgba(0,0,0,0.7)" }}
                   >
                     {isFirstDay
-                      ? "Day 1 - Taking the first step towards recovery!"
+                      ? "Taking the first step towards recovery!"
                       : "days bet‑free"}
                   </Text>
                 </View>
@@ -203,7 +214,7 @@ export function Congratulations({ onClose }: CongratulationsProps) {
           </View>
 
           {/* Share Button */}
-          <View className="items-center mb-3">
+          <View className="items-center mb-2">
             <TouchableOpacity
               onPress={onShare}
               className="w-full rounded-2xl py-4 px-8"

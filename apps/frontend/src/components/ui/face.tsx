@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 
 import { Text, View } from "@/components/ui";
 import { Streak } from "@/components/ui/streak";
+import { useResponsive } from "@/lib/responsive";
 
 const Face = ({
   name,
@@ -11,15 +12,18 @@ const Face = ({
   name: string;
   streak: number;
   src: string;
-}) => (
-  <View className="flex flex-col items-center gap-1">
-    <Image source={src} style={{ width: 120, height: 120, borderRadius: 70 }} />
-    <View className="flex flex-col">
-      <Text className="text-center font-bold">{name}</Text>
-
-      <Streak streak={streak} />
+}) => {
+  const { vw, ms } = useResponsive();
+  const size = Math.min(vw(32), ms(120));
+  return (
+    <View className="flex flex-col items-center gap-1">
+      <Image source={src} style={{ width: size, height: size, borderRadius: size / 2 }} />
+      <View className="flex flex-col">
+        <Text className="text-center font-bold">{name}</Text>
+        <Streak streak={streak} />
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
 export default Face;

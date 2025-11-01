@@ -1,20 +1,25 @@
 import React, { useEffect, useRef } from "react";
-import { Animated, Easing } from "react-native";
+import { Animated, Easing, useWindowDimensions } from "react-native";
 
 const Hover = ({
   top = 0,
   left = 0,
+  topPct,
+  leftPct,
   amplitude = 6,
   children,
 }: {
   top?: number;
   left?: number;
+  topPct?: number; // 0-100
+  leftPct?: number; // 0-100
   amplitude?: number;
   children?: React.ReactNode;
 }) => {
   // Create animated values for x and y positions
   const positionX = useRef(new Animated.Value(0)).current;
   const positionY = useRef(new Animated.Value(0)).current;
+  const { width, height } = useWindowDimensions();
 
   const animate = () => {
     // Animate to new position
@@ -43,8 +48,8 @@ const Hover = ({
     <Animated.View
       style={{
         position: "absolute",
-        top,
-        left,
+        top: topPct != null ? (height * topPct) / 100 : top,
+        left: leftPct != null ? (width * leftPct) / 100 : left,
         transform: [{ translateX: positionX }, { translateY: positionY }],
       }}
     >

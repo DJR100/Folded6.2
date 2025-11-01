@@ -8,6 +8,7 @@ import { Text, View } from "@/components/ui";
 import { Streak } from "@/components/ui/streak";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { cn } from "@/lib/cn";
+import { useResponsive } from "@/lib/responsive";
 
 export default function Onboarding() {
   const { setOnboarding, updateUser } = useAuthContext();
@@ -105,26 +106,30 @@ const Friend = ({
   src: string;
   selected: boolean;
   onPress: () => void;
-}) => (
-  <TouchableOpacity onPress={onPress}>
-    <View
-      className={cn(
-        // Always show green outline and accent glow
-        "py-4 px-6 rounded-xl bg-content2 flex flex-col gap-4 border-2 border-accent bg-accent/20",
-      )}
-    >
-      <Text>"{message}"</Text>
+}) => {
+  const { ms } = useResponsive();
+  const avatar = ms(50);
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View
+        className={cn(
+          // Always show green outline and accent glow
+          "py-4 px-6 rounded-xl bg-content2 flex flex-col gap-4 border-2 border-accent bg-accent/20",
+        )}
+      >
+        <Text>"{message}"</Text>
 
-      <View className="flex flex-row items-center gap-2">
-        <Image
-          source={src}
-          style={{ width: 50, height: 50, borderRadius: 100 }}
-        />
-        <View className="flex flex-col gap-1">
-          <Text variant="p">{name}</Text>
-          <Streak streak={streak} />
+        <View className="flex flex-row items-center gap-2">
+          <Image
+            source={src}
+            style={{ width: avatar, height: avatar, borderRadius: avatar / 2 }}
+          />
+          <View className="flex flex-col gap-1">
+            <Text variant="p">{name}</Text>
+            <Streak streak={streak} />
+          </View>
         </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
