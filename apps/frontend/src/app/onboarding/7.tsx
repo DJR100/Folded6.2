@@ -7,15 +7,24 @@ import {
 import { Image } from "expo-image";
 import { router, type Href } from "expo-router";
 import { ScrollView } from "react-native";
+import { useEffect } from "react";
 
 import { Guardian } from "@/components/guardian";
 import { OnboardingLayout } from "@/components/layouts/onboarding";
 import { Button, Text, View } from "@/components/ui";
 import { colors } from "@/constants/colors";
 import { useAuthContext } from "@/hooks/use-auth-context";
+import { maybeAskForReview } from "@/lib/review";
 
 export default function Onboarding() {
   const { setOnboarding } = useAuthContext();
+
+  // Ask for a review when this screen is shown (Apple throttles display)
+  useEffect(() => {
+    (async () => {
+      await maybeAskForReview("onboarding_7");
+    })();
+  }, []);
 
   const onComplete = async () => {
     router.push("/onboarding/paywall" as Href);
