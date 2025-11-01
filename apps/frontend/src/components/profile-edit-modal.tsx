@@ -14,6 +14,7 @@ import {
 import { Button, Input, Text, View } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { uploadProfileImage } from "@/lib/image-upload";
+import { useResponsive } from "@/lib/responsive";
 
 interface ProfileEditModalProps {
   visible: boolean;
@@ -25,6 +26,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
   onClose,
 }) => {
   const { user, updateUser } = useAuthContext();
+  const { ms } = useResponsive();
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState(user?.displayName || "");
   const [profileImageUri, setProfileImageUri] = useState<string | null>(
@@ -177,13 +179,13 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
               <View className="items-center mb-6">
                 <View className="relative">
                   <View
-                    className="w-32 h-32 rounded-full border-2 border-gray-400 items-center justify-center"
-                    style={{ borderColor: "#9CA3AF" }}
+                    className="rounded-full border-2 border-gray-400 items-center justify-center"
+                    style={{ borderColor: "#9CA3AF", width: ms(128), height: ms(128) }}
                   >
                     {profileImageUri ? (
                       <Image
                         source={{ uri: profileImageUri }}
-                        style={{ width: 124, height: 124, borderRadius: 62 }}
+                        style={{ width: ms(124), height: ms(124), borderRadius: ms(62) }}
                         contentFit="cover"
                       />
                     ) : (

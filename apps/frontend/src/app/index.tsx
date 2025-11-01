@@ -69,7 +69,7 @@ export default function SignIn() {
       <View className="w-full flex items-center gap-8 pt-8 px-4">
         {/* Title */}
         <View className="w-full flex items-center gap-2">
-          <Text variant="h1" className="text-center">
+          <Text variant="h1" className="text-center" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.9}>
             Are you ready to{"\n"}
             <Text variant="h1" className="text-accent">
               quit forever?
