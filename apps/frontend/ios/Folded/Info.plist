@@ -63,6 +63,8 @@
     <string>Allow Folded to use the camera to customise your profile and complete daily challenges. Folded only reads the photos you select.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Allow Folded to access your photos to customise your profile and complete daily challenges. Folded only reads the photos you select.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Folded does not use your location. If iOS asks, you can safely deny and continue.</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
