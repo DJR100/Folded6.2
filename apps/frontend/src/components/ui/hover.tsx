@@ -7,6 +7,8 @@ const Hover = ({
   topPct,
   leftPct,
   amplitude = 6,
+  offsetX = 0,
+  offsetY = 0,
   children,
 }: {
   top?: number;
@@ -14,6 +16,8 @@ const Hover = ({
   topPct?: number; // 0-100
   leftPct?: number; // 0-100
   amplitude?: number;
+  offsetX?: number; // pixel offset applied after percentage calc
+  offsetY?: number; // pixel offset applied after percentage calc
   children?: React.ReactNode;
 }) => {
   // Create animated values for x and y positions
@@ -48,8 +52,8 @@ const Hover = ({
     <Animated.View
       style={{
         position: "absolute",
-        top: topPct != null ? (height * topPct) / 100 : top,
-        left: leftPct != null ? (width * leftPct) / 100 : left,
+        top: (topPct != null ? (height * topPct) / 100 : top) + offsetY,
+        left: (leftPct != null ? (width * leftPct) / 100 : left) + offsetX,
         transform: [{ translateX: positionX }, { translateY: positionY }],
       }}
     >
