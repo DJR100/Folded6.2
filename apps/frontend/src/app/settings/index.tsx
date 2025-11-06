@@ -2,6 +2,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
+import * as StoreReview from "expo-store-review";
 import * as Notifications from "expo-notifications";
 import * as Application from "expo-application";
 import { useNetworkState } from "expo-network";
@@ -114,6 +115,38 @@ export default function SettingsRoot() {
     );
   };
 
+  const handleReviewPress = async () => {
+    // In development, the native in-app review UI never appears.
+    if (__DEV__) {
+      Alert.alert(
+        "Not available in development",
+        "The in-app review card only appears on TestFlight or App Store builds.",
+      );
+      return;
+    }
+
+    try {
+      const available = await StoreReview.isAvailableAsync();
+      if (available) {
+        await StoreReview.requestReview();
+        return;
+      }
+    } catch {}
+
+    try {
+      const url = await StoreReview.storeUrl();
+      if (url) {
+        await Linking.openURL(url);
+        return;
+      }
+    } catch {}
+
+    Alert.alert(
+      "Review not available",
+      "We couldn't show the in-app review prompt on this device right now.",
+    );
+  };
+
   return (
     <View className="flex-1 bg-background">
       <View className="flex-row items-center gap-2 px-4 py-3">
@@ -130,7 +163,7 @@ export default function SettingsRoot() {
 
         <TouchableOpacity
           className="bg-white/5 rounded-xl px-4 py-4 mb-3"
-          onPress={() => Alert.alert("Coming to the app store soon.")}
+          onPress={handleReviewPress}
         >
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">

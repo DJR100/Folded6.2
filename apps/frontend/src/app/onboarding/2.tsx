@@ -1,8 +1,10 @@
 import { router } from "expo-router";
+import { useEffect } from "react";
 
 import { OnboardingLayout } from "@/components/layouts/onboarding";
 import { Text, View } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
+import { maybeAskForReview } from "@/lib/review";
 
 export default function Onboarding() {
   const { setOnboarding } = useAuthContext();
@@ -10,6 +12,13 @@ export default function Onboarding() {
   const score = 0.52;
   const average = 0.13;
   const height = 300;
+
+  // Prompt for a review when the analysis screen is shown (Apple throttles display)
+  useEffect(() => {
+    (async () => {
+      await maybeAskForReview("analysis_complete");
+    })();
+  }, []);
 
   return (
     <OnboardingLayout

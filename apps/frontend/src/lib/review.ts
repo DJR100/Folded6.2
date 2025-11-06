@@ -9,7 +9,8 @@ type Reason =
   | "onboarding_7"
   | "onboarding_complete"
   | "purchase_success"
-  | "daily_challenge_win";
+  | "daily_challenge_win"
+  | "analysis_complete"; // added for analysis screen
 
 type PromptState = {
   lastPromptAt?: number;
