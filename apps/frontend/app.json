@@ -17,7 +17,11 @@
         "NSCameraUsageDescription": "Allow Folded to use the camera to customise your profile and complete daily challenges. Folded only reads the photos you select.",
         "NSPhotoLibraryUsageDescription": "Allow Folded to access your photos to customise your profile and complete daily challenges. Folded only reads the photos you select.",
         "NSLocationWhenInUseUsageDescription": "Folded does not use your location. If iOS asks, you can safely deny and continue.",
-        "UIDeviceFamily": [1]
+        "UIDeviceFamily": [1],
+        "LSApplicationQueriesSchemes": [
+          "whatsapp",
+          "whatsapp-messenger"
+        ]
       },
       "googleServicesFile": "./GoogleService-Info.plist"
     },

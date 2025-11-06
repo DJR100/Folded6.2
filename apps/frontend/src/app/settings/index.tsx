@@ -4,6 +4,8 @@ import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import * as Notifications from "expo-notifications";
 import * as Application from "expo-application";
+import { useNetworkState } from "expo-network";
+import * as Clipboard from "expo-clipboard";
 import React, { useState } from "react";
 import {
   Platform,
@@ -18,7 +20,7 @@ import { useAuthContext } from "@/hooks/use-auth-context";
 
 const FEEDBACK_URL = "https://forms.gle/7nmUPk3wC15mmL4p8";
 const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/GAQVvOphcG1BZEJOg636n6";
-const SUPPORT_EMAIL = "me@dillonroberts.co.uk";
+const SUPPORT_EMAIL = "hello@folded.app";
 const SUPPORT_SUBJECT = "Folded App Support";
 
 // helper chevron
@@ -42,6 +44,75 @@ async function scheduleDailyReminder(hour = 21, minute = 0) {
 export default function SettingsRoot() {
   const [remindersEnabled, setRemindersEnabled] = useState(false);
   const { user, updateUser } = useAuthContext();
+  const network = useNetworkState();
+
+  const openBrowserFallback = async () => {
+    try {
+      await WebBrowser.openBrowserAsync(WHATSAPP_GROUP_URL);
+    } catch {
+      try {
+        await Clipboard.setStringAsync(WHATSAPP_GROUP_URL);
+        Alert.alert(
+          "Invite link copied",
+          "We couldn't open a browser. The invite link has been copied to your clipboard.",
+        );
+      } catch {}
+    }
+  };
+
+  const showJoinOptions = () =>
+    Alert.alert(
+      "Join the community",
+      "We couldn't open WhatsApp. You can continue in your browser or copy the invite link.",
+      [
+        { text: "Open in Browser", onPress: openBrowserFallback },
+        {
+          text: "Copy Invite Link",
+          onPress: async () => {
+            try {
+              await Clipboard.setStringAsync(WHATSAPP_GROUP_URL);
+              Alert.alert("Invite link copied", "Paste this in any app to join.");
+            } catch {}
+          },
+        },
+        { text: "Cancel", style: "cancel" },
+      ],
+    );
+
+  const attemptOpenWhatsApp = async () => {
+    try {
+      const canOpenWhatsApp = await Linking.canOpenURL("whatsapp://");
+      if (canOpenWhatsApp) {
+        try {
+          await Linking.openURL(WHATSAPP_GROUP_URL);
+          return;
+        } catch {}
+      }
+      showJoinOptions();
+    } catch {
+      showJoinOptions();
+    }
+  };
+
+  const handleJoinCommunityPress = async () => {
+    if (network?.isConnected === false) {
+      Alert.alert(
+        "No internet connection",
+        "Connect to the internet to join the WhatsApp support group.",
+      );
+      return;
+    }
+
+    Alert.alert(
+      "Open WhatsApp",
+      "You're about to open WhatsApp to join the community.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Continue", onPress: attemptOpenWhatsApp },
+        { text: "Open in Browser", onPress: openBrowserFallback },
+      ],
+    );
+  };
 
   return (
     <View className="flex-1 bg-background">
@@ -72,7 +143,9 @@ export default function SettingsRoot() {
 
         <TouchableOpacity
           className="bg-white/5 rounded-xl px-4 py-4 mb-3"
-          onPress={() => WebBrowser.openBrowserAsync(WHATSAPP_GROUP_URL)}
+          onPress={handleJoinCommunityPress}
+          disabled={network?.isConnected === false}
+          style={{ opacity: network?.isConnected === false ? 0.5 : 1 }}
         >
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">
@@ -81,6 +154,11 @@ export default function SettingsRoot() {
             </View>
             <ChevronRight />
           </View>
+          {network?.isConnected === false && (
+            <Text className="text-white/60 text-xs mt-1 ml-7">
+              Connect to the internet to join the WhatsApp support group.
+            </Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -97,7 +175,7 @@ export default function SettingsRoot() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="bg-white/5 rounded-xl px-4 py-4 mb-6"
+          className="bg-white/5 rounded-xl px-4 py-4 mb-3"
           onPress={async () => {
             const body = `\n\n----- DO NOT REMOVE DEBUG INFO -----\n\nUser ID: ${user?.uid ?? "-"}\nPlatform: ${Platform.OS}\nApp Version: ${Application.nativeApplicationVersion ?? "-"}\n\n`;
             const mailtoUrl = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
@@ -111,7 +189,7 @@ export default function SettingsRoot() {
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">
               <Feather name="send" size={16} color="white" />
-              <Text className="text-white">Support Email</Text>
+              <Text className="text-white">Email Folded Support</Text>
             </View>
             <ChevronRight />
           </View>
