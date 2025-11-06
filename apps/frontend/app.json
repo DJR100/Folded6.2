@@ -4,7 +4,7 @@
     "slug": "my-app",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./src/assets/images/favicon3.png",
+    "icon": "./src/assets/images/folded_favicon_new.png",
     "scheme": "folded",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
@@ -38,7 +38,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./src/assets/images/favicon.png"
+      "favicon": "./src/assets/images/folded_favicon_new.png"
     },
     "plugins": [
       "expo-router",
