@@ -166,7 +166,7 @@ export function Congratulations({ onClose }: CongratulationsProps) {
                   }}
                 >
                   <Image
-                    source={require("@/assets/images/favicon3.png")}
+                    source={require("@/assets/images/folded_icon_11.25.png")}
                     style={{ width: 16, height: 16, borderRadius: 3 }}
                     contentFit="contain"
                   />

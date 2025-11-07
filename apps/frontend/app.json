@@ -4,7 +4,7 @@
     "slug": "my-app",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./src/assets/images/folded_favicon_new.png",
+    "icon": "./src/assets/images/folded_icon_11.25.png",
     "scheme": "folded",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
@@ -38,14 +38,14 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./src/assets/images/folded_favicon_new.png"
+      "favicon": "./src/assets/images/folded_icon_11.25.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./src/assets/images/splash-icon.png",
+          "image": "./src/assets/images/folded_icon_11.25.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
@@ -84,7 +84,8 @@
       "router": {},
       "eas": {
         "projectId": "59b4e062-092d-4a71-832c-909890838a69"
-      }
+      },
+      "mixpanelToken": "aa36c4bdf99b5484ba43604841eb9d29"
     },
     "owner": "djr_100"
   }

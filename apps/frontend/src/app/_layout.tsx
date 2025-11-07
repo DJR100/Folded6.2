@@ -20,6 +20,7 @@ import { AuthContextProvider } from "@/hooks/use-auth-context";
 import { useFontLoad } from "@/hooks/use-font-load";
 import { useEffect } from "react";
 import Purchases from "react-native-purchases";
+import { initMixpanel, track, mixpanel } from "@/lib/mixpanel";
 
 export default function Root() {
   const fontsLoaded = useFontLoad();
@@ -32,6 +33,17 @@ export default function Root() {
       return;
     }
     Purchases.configure({ apiKey: key });
+  }, [fontsLoaded]);
+
+  // Initialize Mixpanel and send a test event
+  useEffect(() => {
+    if (!fontsLoaded) return;
+    (async () => {
+      await initMixpanel();
+      track("app_open");
+      track("setup_test", { t: Date.now() });
+      mixpanel.flush();
+    })();
   }, [fontsLoaded]);
 
   if (!fontsLoaded) return null;
