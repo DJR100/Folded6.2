@@ -85,7 +85,8 @@
       "eas": {
         "projectId": "59b4e062-092d-4a71-832c-909890838a69"
       },
-      "mixpanelToken": "aa36c4bdf99b5484ba43604841eb9d29"
+      "mixpanelToken": "d6eea6f2259bcdd478b8a21347252399",
+      "mixpanelServerURL": "https://api-eu.mixpanel.com"
     },
     "owner": "djr_100"
   }

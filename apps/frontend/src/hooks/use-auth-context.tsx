@@ -21,7 +21,11 @@ import {
 } from "react";
 
 import { app, db } from "@/lib/firebase";
+import { initMixpanel, mixpanel, track } from "@/lib/mixpanel";
 import Purchases from "react-native-purchases";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 
 export const auth = initializeAuth(app);
 
@@ -68,6 +72,8 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
   const signIn = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      // Track successful sign-in
+      track("sign_in");
     } catch (error) {
       console.error(error);
       throw error;
@@ -76,6 +82,8 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
 
   const signOut = async () => {
     try {
+      // Track sign-out before resetting identity
+      track("sign_out");
       await signOutFirebase(auth);
 
       // Reset all state
@@ -109,6 +117,11 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
     return () => {
       unsubscribeAuthState();
     };
+  }, []);
+
+  // Ensure Mixpanel is initialized once when the provider mounts
+  useEffect(() => {
+    initMixpanel();
   }, []);
 
   // ✅ THIS IS THE KEY CHANGE - Sync local state with database state
@@ -212,17 +225,52 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
     };
   }, [user?.uid, user?.tier]); // ✅ Also watch user.tier to refresh listener when onboarding completes
 
-  // Keep RevenueCat identity in sync with Firebase auth user
+  // Keep RevenueCat and Mixpanel identity in sync with Firebase auth user
   useEffect(() => {
     const sync = async () => {
       try {
-        if (user?.uid) {
-          await Purchases.logIn(user.uid);
+        const uid = user?.uid ?? auth.currentUser?.uid ?? null;
+        if (uid) {
+          await Purchases.logIn(uid);
+          // Alias anonymous -> identified ONCE per user to merge pre-login events
+          try {
+            const aliasKey = `mp_alias_done_${uid}`;
+            const alreadyAliased = await AsyncStorage.getItem(aliasKey);
+            if (!alreadyAliased) {
+              const currentDistinctId = await mixpanel.getDistinctId();
+              if (currentDistinctId && currentDistinctId !== uid) {
+                // alias(aliasId, distinctId)
+                mixpanel.alias(uid, currentDistinctId);
+              }
+              await AsyncStorage.setItem(aliasKey, "1");
+            }
+          } catch {}
+
+          // Identify the user in Mixpanel and set basic profile properties
+          await mixpanel.identify(uid);
+          // First-time profile properties (set once)
+          mixpanel.getPeople().setOnce({
+            $created: new Date().toISOString(),
+            first_app_version: Constants.expoConfig?.version ?? null,
+            first_platform: Platform.OS,
+          });
+          // Updatable profile properties
+          mixpanel.getPeople().set({
+            $email: (user as any)?.email ?? null,
+            $name:
+              (user as any)?.displayName ??
+              ((user as any)?.email?.split("@")[0] ?? null),
+            tier: (user as any)?.tier ?? null,
+            last_login_at: new Date().toISOString(),
+          });
+          // Force immediate upload so the Users tab reflects changes quickly
+          mixpanel.flush();
         } else {
           await Purchases.logOut();
+          mixpanel.reset();
         }
       } catch (e) {
-        if (__DEV__) console.warn("RevenueCat ID sync failed", e);
+        if (__DEV__) console.warn("RevenueCat/Mixpanel ID sync failed", e);
       }
     };
     sync();

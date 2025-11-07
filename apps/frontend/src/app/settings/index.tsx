@@ -7,7 +7,7 @@ import * as Notifications from "expo-notifications";
 import * as Application from "expo-application";
 import { useNetworkState } from "expo-network";
 import * as Clipboard from "expo-clipboard";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Platform,
   Switch,
@@ -18,6 +18,7 @@ import {
 
 import { Text, View } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
+import { track } from "@/lib/mixpanel";
 
 const FEEDBACK_URL = "https://forms.gle/7nmUPk3wC15mmL4p8";
 const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/GAQVvOphcG1BZEJOg636n6";
@@ -46,6 +47,11 @@ export default function SettingsRoot() {
   const [remindersEnabled, setRemindersEnabled] = useState(false);
   const { user, updateUser } = useAuthContext();
   const network = useNetworkState();
+
+  // Track settings screen view
+  useEffect(() => {
+    track("settings_view");
+  }, []);
 
   const openBrowserFallback = async () => {
     try {
