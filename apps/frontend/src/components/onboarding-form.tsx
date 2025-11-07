@@ -1,12 +1,14 @@
 import { Range } from "@folded/types";
 import { doc, setDoc } from "@react-native-firebase/firestore";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { OnboardingLayout } from "@/components/layouts/onboarding";
 import { Button, Input, Text } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { db } from "@/lib/firebase";
 import { deriveSpendMeta } from "@/lib/moneysaved";
+import { mapOnboardingFormStageToStep, trackOnboardingStepView } from "@/lib/funnel";
+import { usePathname } from "expo-router";
 
 export interface OnboardingFormStage {
   title: string;
@@ -35,6 +37,18 @@ export default function OnboardingForm({
 }) {
   const { updateUser } = useAuthContext();
   const [stage, setStage] = useState(0);
+  const route = usePathname();
+  const lastTrackedStageRef = useRef<number | null>(null);
+
+  // Track exactly once per stage change (do not re-fire on route changes)
+  useEffect(() => {
+    if (lastTrackedStageRef.current === stage) return;
+    lastTrackedStageRef.current = stage;
+    const info = mapOnboardingFormStageToStep(stage);
+    if (info) {
+      trackOnboardingStepView({ ...info, route: route ?? "/onboarding" });
+    }
+  }, [stage]);
 
   const nextStage = () => {
     if (stage === stages.length - 1) {

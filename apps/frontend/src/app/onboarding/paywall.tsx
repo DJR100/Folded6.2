@@ -7,6 +7,7 @@ import { StatusBar, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
 import { RC_ENTITLEMENT_ID } from "@/lib/revenuecat";
+import { track } from "@/lib/mixpanel";
 
 export default function OnboardingPaywall() {
   const { source } = useLocalSearchParams<{ source?: string }>();
@@ -15,6 +16,15 @@ export default function OnboardingPaywall() {
   const [reloadKey, setReloadKey] = useState(0);
   const insets = useSafeAreaInsets();
  
+  // Track paywall view
+  useEffect(() => {
+    track("paywall_viewed", {
+      location: "onboarding",
+      variant: "default",
+      source_route: "/onboarding/7",
+    });
+  }, []);
+
   // If already entitled, skip forward to step 8 immediately
   useEffect(() => {
     // When opened from Settings, always show the paywall even for subscribed users
@@ -80,6 +90,12 @@ export default function OnboardingPaywall() {
           const hasPro = !!customerInfo.entitlements.active[RC_ENTITLEMENT_ID];
           if (!hasPro) return;
 
+          track("purchase_succeeded", {
+            product_id: offering?.identifier ?? null,
+            variant: "default",
+            trial: null,
+          });
+
           if (source === "settings") {
             Alert.alert(
               "Subscription active",
@@ -98,6 +114,13 @@ export default function OnboardingPaywall() {
           const hasPro = !!customerInfo.entitlements.active[RC_ENTITLEMENT_ID];
           if (!hasPro) return;
 
+          track("purchase_succeeded", {
+            product_id: offering?.identifier ?? null,
+            variant: "default",
+            trial: null,
+            restored: true,
+          });
+
           if (source === "settings") {
             Alert.alert(
               "Subscription restored",
@@ -114,6 +137,10 @@ export default function OnboardingPaywall() {
         }}
         onPurchaseError={({ error }) => {
           if (__DEV__) console.warn(error);
+          track("purchase_failed", {
+            variant: "default",
+            error_code: (error as any)?.code ?? "unknown",
+          });
           // If Apple shows "You are currently subscribed", attempt restore and unlock
           (async () => {
             try {

@@ -17,6 +17,8 @@ import {
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { cn } from "@/lib/cn";
 import BetFreeTimer from "@/components/BetFreeTimer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { track } from "@/lib/mixpanel";
 
 const ProfileHeaderInline = React.memo(function ProfileHeaderInline() {
   const { user } = useAuthContext();
@@ -68,6 +70,22 @@ const ProfileHeaderInline = React.memo(function ProfileHeaderInline() {
 // Internal component that uses the daily challenge context
 function DashboardContent() {
   const { user } = useAuthContext();
+
+  // First/any dashboard view tracking
+  useEffect(() => {
+    (async () => {
+      try {
+        const key = "mp_has_seen_dashboard";
+        const seen = await AsyncStorage.getItem(key);
+        if (!seen) {
+          track("dashboard_viewed", { first_time: true, screen_group: "dashboard" });
+          await AsyncStorage.setItem(key, "1");
+        } else {
+          track("dashboard_viewed", { first_time: false, screen_group: "dashboard" });
+        }
+      } catch {}
+    })();
+  }, []);
 
   // Connect to daily challenge system
   const {

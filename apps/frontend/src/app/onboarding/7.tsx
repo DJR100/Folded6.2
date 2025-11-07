@@ -15,6 +15,7 @@ import { Button, Text, View } from "@/components/ui";
 import { colors } from "@/constants/colors";
 import { useAuthContext } from "@/hooks/use-auth-context";
 import { maybeAskForReview } from "@/lib/review";
+import { track } from "@/lib/mixpanel";
 
 export default function Onboarding() {
   const { setOnboarding } = useAuthContext();
@@ -27,6 +28,10 @@ export default function Onboarding() {
   }, []);
 
   const onComplete = async () => {
+    track("onboarding_cta_clicked", {
+      step_key: "pre_paywall",
+      cta: "join",
+    });
     router.push("/onboarding/paywall" as Href);
   };
 

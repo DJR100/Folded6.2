@@ -35,7 +35,9 @@ export async function initMixpanel() {
   const superProps = {
     app_version: Constants.expoConfig?.version ?? null,
     platform: Platform.OS,
-    env: __DEV__ ? "dev" : "prod",
+    env:
+      (extra?.environment as string | undefined) ||
+      (__DEV__ ? "development" : "production"),
     data_source: "MP-React",
   } as Record<string, any>;
 

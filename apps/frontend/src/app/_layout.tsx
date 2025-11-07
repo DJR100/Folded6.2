@@ -1,5 +1,5 @@
 import { PortalHost, PortalProvider } from "@gorhom/portal";
-import { Slot } from "expo-router";
+import { Slot, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,12 +18,20 @@ if (!__DEV__) {
 import { View } from "@/components/ui";
 import { AuthContextProvider } from "@/hooks/use-auth-context";
 import { useFontLoad } from "@/hooks/use-font-load";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Purchases from "react-native-purchases";
 import { initMixpanel, track, mixpanel } from "@/lib/mixpanel";
+import {
+  mapPathToOnboardingStep,
+  trackOnboardingStepView,
+} from "@/lib/funnel";
 
 export default function Root() {
   const fontsLoaded = useFontLoad();
+  const pathname = usePathname();
+  const lastPathRef = useRef<string | null>(null);
+  const lastTsRef = useRef<number>(0);
+
   // Initialize RevenueCat Purchases SDK (keep hook order stable; guard on fontsLoaded)
   useEffect(() => {
     if (!fontsLoaded) return;
@@ -35,16 +43,33 @@ export default function Root() {
     Purchases.configure({ apiKey: key });
   }, [fontsLoaded]);
 
-  // Initialize Mixpanel and send a test event
+  // Initialize Mixpanel and send app_open
   useEffect(() => {
     if (!fontsLoaded) return;
     (async () => {
       await initMixpanel();
-      track("app_open");
-      track("setup_test", { t: Date.now() });
+      track("app_open", { launch_type: "cold" });
       mixpanel.flush();
     })();
   }, [fontsLoaded]);
+
+  // Global route focus tracking for onboarding steps outside the form
+  useEffect(() => {
+    if (!fontsLoaded) return;
+    if (!pathname) return;
+    const now = Date.now();
+    // Debounce identical rapid transitions
+    if (lastPathRef.current === pathname && now - lastTsRef.current < 400) {
+      return;
+    }
+    lastPathRef.current = pathname;
+    lastTsRef.current = now;
+
+    const step = mapPathToOnboardingStep(pathname);
+    if (step) {
+      trackOnboardingStepView({ ...step, route: pathname });
+    }
+  }, [fontsLoaded, pathname]);
 
   if (!fontsLoaded) return null;
 
