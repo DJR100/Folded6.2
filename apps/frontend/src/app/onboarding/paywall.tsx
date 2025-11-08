@@ -9,6 +9,14 @@ import { AntDesign } from "@expo/vector-icons";
 import { RC_ENTITLEMENT_ID } from "@/lib/revenuecat";
 import { track } from "@/lib/mixpanel";
 
+// Prevent indefinite waits on store/network calls
+function withTimeout<T>(promise: Promise<T>, ms = 12000): Promise<T> {
+  return Promise.race<T>([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
+  ]);
+}
+
 export default function OnboardingPaywall() {
   const { source } = useLocalSearchParams<{ source?: string }>();
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
@@ -42,7 +50,14 @@ export default function OnboardingPaywall() {
     let isMounted = true;
     const load = async () => {
       try {
-        const o = await Purchases.getOfferings();
+        // Ensure the SDK key is present in production builds; surface a clear error if not
+        const key = process.env.EXPO_PUBLIC_RC_IOS_KEY;
+        if (!key) {
+          setOffering(null);
+          setLoadError("Purchases are unavailable right now. Please try again later.");
+          return;
+        }
+        const o = await withTimeout(Purchases.getOfferings(), 12000);
         const current = o.current ?? null;
         if (!isMounted) return;
         if (!current || (current.availablePackages?.length ?? 0) === 0) {
@@ -55,7 +70,7 @@ export default function OnboardingPaywall() {
       } catch (e) {
         if (__DEV__) console.warn(e);
         if (!isMounted) return;
-        setLoadError("Unable to load purchase options. Check your connection and retry.");
+        setLoadError("Unable to load purchase options. Check your connection and try again.");
       }
     };
     load();
@@ -164,13 +179,19 @@ export default function OnboardingPaywall() {
                     [{ text: "Continue", onPress: () => router.replace("/onboarding/8") }],
                   );
                 }
+              } else {
+                Alert.alert(
+                  "Purchase failed",
+                  (error as any)?.message ??
+                    "We couldn't complete the purchase. Please try again.",
+                );
               }
             } catch {}
           })();
         }}
       />
 
-      {/* Custom close button overlay in the extreme top-right (partially under status icons) */}
+      {/* Overlay: close button only (no additional UI changes) */}
       <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
         <TouchableOpacity
           accessibilityRole="button"
