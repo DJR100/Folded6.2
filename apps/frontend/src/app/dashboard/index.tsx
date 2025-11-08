@@ -2,7 +2,8 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, useWindowDimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { StreakTracker } from "@/components/daily-challenge/streak-tracker";
 import { DashboardLayout } from "@/components/layouts/dashboard";
@@ -19,17 +20,25 @@ import { cn } from "@/lib/cn";
 import BetFreeTimer from "@/components/BetFreeTimer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { track } from "@/lib/mixpanel";
+import { useResponsive } from "@/lib/responsive";
 
 const ProfileHeaderInline = React.memo(function ProfileHeaderInline() {
   const { user } = useAuthContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const displayName = user?.displayName || user?.email?.split("@")[0] || "User";
+  const { vw, ms } = useResponsive();
+  const avatarSize = Math.max(112, Math.min(vw(42), ms(180)));
 
   return (
     <View className="items-center">
       <View
-        className="w-1/2 aspect-square rounded-full border-2 border-gray-400 items-center justify-center overflow-hidden"
-        style={{ borderColor: "#9CA3AF" }}
+        className="rounded-full border-2 border-gray-400 items-center justify-center overflow-hidden"
+        style={{
+          width: avatarSize,
+          height: avatarSize,
+          borderRadius: avatarSize / 2,
+          borderColor: "#9CA3AF",
+        }}
       >
         {user?.photoURL ? (
           <Image
@@ -45,7 +54,14 @@ const ProfileHeaderInline = React.memo(function ProfileHeaderInline() {
       </View>
 
       <View className="flex-row items-center mt-3">
-        <Text className="text-lg font-semibold">{displayName}</Text>
+        <Text
+          className="text-lg font-semibold"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.9}
+        >
+          {displayName}
+        </Text>
         <TouchableOpacity
           onPress={() => setIsModalVisible(true)}
           style={{ marginLeft: 6 }}
@@ -66,6 +82,36 @@ const ProfileHeaderInline = React.memo(function ProfileHeaderInline() {
     </View>
   );
 });
+
+// Auto-fit wrapper that scales content down to fit available height; never upscales
+function AutoFit({ children }: { children: React.ReactNode }) {
+  const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const [contentH, setContentH] = useState<number | null>(null);
+
+  const TAB_BAR_H = 40; // matches dashboard/_layout.tsx tabBarStyle.height
+  const reserved = 24 + insets.top + insets.bottom + TAB_BAR_H;
+  const avail = Math.max(0, height - reserved);
+  const scale = contentH ? Math.min(1, avail / contentH) : 1;
+
+  return (
+    <View style={{ alignItems: "center", width: "100%" }}>
+      <View
+        onLayout={(e) => {
+          const h = e.nativeEvent.layout.height;
+          if (!contentH || Math.abs(h - contentH) > 2) setContentH(h);
+        }}
+        style={{
+          width: "100%",
+          maxWidth: 720,
+          transform: [{ scale }],
+        }}
+      >
+        {children}
+      </View>
+    </View>
+  );
+}
 
 // Internal component that uses the daily challenge context
 function DashboardContent() {
@@ -213,13 +259,21 @@ function DashboardContent() {
 
   return (
     <DashboardLayout>
-      <View className="flex justify-between flex-1">
+      <AutoFit>
+        <View className="flex justify-between">
         {/* Header with Folded branding */}
         <View className="flex-row items-center justify-between mb-4">
           {/* Left spacer to balance the gear width */}
           <View className="w-8" />
           {/* Centered title */}
-          <Text className="text-lg font-medium">Folded</Text>
+          <Text
+            className="text-lg font-medium"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.9}
+          >
+            Folded
+          </Text>
           {/* Right gear, same width as left spacer to keep title perfectly centered */}
           <View className="w-8 items-end pr-1">
             <TouchableOpacity
@@ -292,6 +346,9 @@ function DashboardContent() {
               >
                 <Text
                   className="font-medium text-center"
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.9}
                   style={{
                     color: buttonConfig.textColor,
                     opacity: buttonConfig.textOpacity,
@@ -313,9 +370,14 @@ function DashboardContent() {
             weekProgress={weekProgress}
             className="w-full px-4"
           />
+
+          {/* Panic Button inside fitted stack */}
+          <View className="w-full px-4">
+            <PanicButton />
+          </View>
         </View>
-        <PanicButton />
-      </View>
+        </View>
+      </AutoFit>
     </DashboardLayout>
   );
 }
