@@ -35,10 +35,37 @@ export default function OnboardingForm({
   stages: OnboardingFormStage[];
   onComplete: () => void;
 }) {
-  const { updateUser } = useAuthContext();
-  const [stage, setStage] = useState(0);
+  const { updateUser, user } = useAuthContext();
   const route = usePathname();
   const lastTrackedStageRef = useRef<number | null>(null);
+
+  // Derive current stage from user data to persist across remounts
+  const getCurrentStage = (): number => {
+    if (!user) return 0;
+    
+    // Check which stages have been completed
+    if (!user.demographic?.gender) return 0;
+    if (!user.demographic?.age) return 1;
+    if (!user.demographic?.gambling?.ageStarted) return 2;
+    if (!user.demographic?.gambling?.frequency) return 3;
+    if (!user.demographic?.gambling?.monthlySpend) return 4;
+    if (!user.demographic?.gambling?.estimatedLifetimeLoss) return 5;
+    
+    // All stages complete
+    return stages.length;
+  };
+
+  const [stage, setStage] = useState(() => getCurrentStage());
+
+  // Update stage when user data changes (but don't go backwards)
+  useEffect(() => {
+    const currentStageFromData = getCurrentStage();
+    // Only update if we're not ahead of where we should be
+    // This prevents going backwards when user data updates
+    if (currentStageFromData > stage) {
+      setStage(currentStageFromData);
+    }
+  }, [user?.demographic]);
 
   // Track exactly once per stage change (do not re-fire on route changes)
   useEffect(() => {
@@ -51,14 +78,13 @@ export default function OnboardingForm({
   }, [stage]);
 
   const nextStage = () => {
-    if (stage === stages.length - 1) {
+    if (stage >= stages.length - 1) {
       onComplete();
     } else {
       setStage(stage + 1);
     }
   };
 
-  const { user } = useAuthContext();
   const onPress = async (value: string | Range) => {
     if (stages[stage].key) {
       await updateUser(stages[stage].key, value);

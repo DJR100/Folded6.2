@@ -12,7 +12,7 @@ export default ({ config }: { config: ExpoConfig }) => {
     ...config,
     name: "Folded",
     slug: "my-app",
-    version: "1.0.1",
+    version: "1.0.3", // Increment from 1.0.2 (which was already submitted)
     orientation: "portrait",
     icon: "./src/assets/images/folded_icon_11.25.png",
     scheme: "folded",
@@ -21,7 +21,7 @@ export default ({ config }: { config: ExpoConfig }) => {
     ios: {
       supportsTablet: false,
       bundleIdentifier: "com.folded.so",
-      buildNumber: "11",
+      buildNumber: "19", // Increment from 18 (your last submitted build)
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSCameraUsageDescription:
@@ -40,6 +40,7 @@ export default ({ config }: { config: ExpoConfig }) => {
         foregroundImage: "./src/assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
+      versionCode: 12,
       edgeToEdgeEnabled: true,
       permissions: ["android.permission.CAMERA"],
     },
@@ -100,7 +101,7 @@ export default ({ config }: { config: ExpoConfig }) => {
       mixpanelServerURL: "https://api-eu.mixpanel.com",
     },
     owner: "djr_100",
-    runtimeVersion: { policy: "appVersion" },
+    runtimeVersion: "1.0.1",
     updates: {
       url: "https://u.expo.dev/59b4e062-092d-4a71-832c-909890838a69",
     },

@@ -21,6 +21,7 @@ import BetFreeTimer from "@/components/BetFreeTimer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { track } from "@/lib/mixpanel";
 import { useResponsive } from "@/lib/responsive";
+import { colors } from "@/constants/colors";
 
 const ProfileHeaderInline = React.memo(function ProfileHeaderInline() {
   const { user } = useAuthContext();
@@ -53,7 +54,7 @@ const ProfileHeaderInline = React.memo(function ProfileHeaderInline() {
         )}
       </View>
 
-      <View className="flex-row items-center mt-3">
+      <View className="flex-row items-center justify-center mt-3 relative">
         <Text
           className="text-lg font-semibold"
           numberOfLines={1}
@@ -64,7 +65,8 @@ const ProfileHeaderInline = React.memo(function ProfileHeaderInline() {
         </Text>
         <TouchableOpacity
           onPress={() => setIsModalVisible(true)}
-          style={{ marginLeft: 6 }}
+          style={{ position: "absolute", right: -24 }}
+          hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
         >
           <AntDesign
             name="edit"
@@ -226,25 +228,25 @@ function DashboardContent() {
         text: "Try Daily Challenge Again",
         disabled: false,
         backgroundColor: "#F59E0B",
-        textColor: "white",
+        textColor: "#FFFFFF",
         textOpacity: 1.0,
-        buttonOpacity: 0.8,
+        buttonOpacity: 1.0,
       };
     } else if (canStartChallenge) {
       return {
         text: "Start Daily Challenge",
         disabled: false,
-        backgroundColor: "#3DF08B",
-        textColor: "white",
+        backgroundColor: colors.accent,
+        textColor: "#FFFFFF",
         textOpacity: 1.0,
-        buttonOpacity: 0.8,
+        buttonOpacity: 1.0,
       };
     } else {
       return {
         text: "Challenge Not Available",
         disabled: true,
         backgroundColor: "rgba(255, 255, 255, 0.05)",
-        textColor: "white",
+        textColor: "#FFFFFF",
         textOpacity: 0.5,
         buttonOpacity: 1.0,
       };
@@ -267,15 +269,15 @@ function DashboardContent() {
           <View className="w-8" />
           {/* Centered title */}
           <Text
-            className="text-lg font-medium"
+            className="text-center text-3xl font-bold flex-1"
             numberOfLines={1}
             adjustsFontSizeToFit
-            minimumFontScale={0.9}
+            minimumFontScale={0.7}
           >
-            Folded
+            FOLDED
           </Text>
           {/* Right gear, same width as left spacer to keep title perfectly centered */}
-          <View className="w-8 items-end pr-1">
+          <View className="w-8 items-center">
             <TouchableOpacity
               onPress={() => router.push("/settings")}
               hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
@@ -328,11 +330,7 @@ function DashboardContent() {
                 className="w-full rounded-lg flex-row items-center justify-center"
                 style={{
                   height: 48,
-                  backgroundColor:
-                    buttonConfig.backgroundColor ||
-                    (dailyChallenge.currentDayState === "skipped"
-                      ? "#F59E0B"
-                      : "#3DF08B"),
+                  backgroundColor: buttonConfig.backgroundColor || colors.accent,
                   opacity: buttonConfig.buttonOpacity,
                   borderColor: buttonConfig.borderColor,
                   borderWidth: buttonConfig.borderWidth || 0,
@@ -350,7 +348,7 @@ function DashboardContent() {
                   adjustsFontSizeToFit
                   minimumFontScale={0.9}
                   style={{
-                    color: buttonConfig.textColor,
+                    color: buttonConfig.textColor || "#FFFFFF",
                     opacity: buttonConfig.textOpacity,
                     // Add text shadow for the "shine through" effect
                     textShadowColor: "rgba(0, 0, 0, 0.3)",
