@@ -41,7 +41,7 @@ export default function OnboardingForm({
 
   // Derive current stage from user data to persist across remounts
   const getCurrentStage = (): number => {
-    if (!user) return 0;
+    if (!user || !stages || stages.length === 0) return 0;
     
     // Check which stages have been completed
     if (!user.demographic?.gender) return 0;
@@ -51,21 +51,43 @@ export default function OnboardingForm({
     if (!user.demographic?.gambling?.monthlySpend) return 4;
     if (!user.demographic?.gambling?.estimatedLifetimeLoss) return 5;
     
-    // All stages complete
-    return stages.length;
+    // All stages complete - return the last valid index
+    // Don't return stages.length as that's out of bounds!
+    return Math.min(stages.length - 1, 5);
   };
 
-  const [stage, setStage] = useState(() => getCurrentStage());
+  const [stage, setStage] = useState(() => {
+    const initialStage = getCurrentStage();
+    // If all stages are complete, we should have already moved on
+    // But handle the edge case where we're still on this screen
+    return Math.min(initialStage, stages.length - 1);
+  });
 
-  // Update stage when user data changes (but don't go backwards)
+  // Check if all stages are complete
   useEffect(() => {
+    if (!user || !stages || stages.length === 0) return;
+    
     const currentStageFromData = getCurrentStage();
+    const allComplete = 
+      user.demographic?.gender &&
+      user.demographic?.age &&
+      user.demographic?.gambling?.ageStarted &&
+      user.demographic?.gambling?.frequency &&
+      user.demographic?.gambling?.monthlySpend &&
+      user.demographic?.gambling?.estimatedLifetimeLoss;
+    
+    // If all stages are complete, call onComplete
+    if (allComplete && currentStageFromData >= stages.length - 1) {
+      onComplete();
+      return;
+    }
+    
     // Only update if we're not ahead of where we should be
-    // This prevents going backwards when user data updates
-    if (currentStageFromData > stage) {
+    // And ensure we don't go out of bounds
+    if (currentStageFromData > stage && currentStageFromData < stages.length) {
       setStage(currentStageFromData);
     }
-  }, [user?.demographic]);
+  }, [user?.demographic, stages.length]);
 
   // Track exactly once per stage change (do not re-fire on route changes)
   useEffect(() => {
@@ -86,6 +108,12 @@ export default function OnboardingForm({
   };
 
   const onPress = async (value: string | Range) => {
+    // Add bounds checking
+    if (!stages[stage]?.key) {
+      console.error(`Invalid stage index: ${stage}, stages length: ${stages.length}`);
+      return;
+    }
+    
     if (stages[stage].key) {
       await updateUser(stages[stage].key, value);
 
@@ -112,23 +140,37 @@ export default function OnboardingForm({
     nextStage();
   };
 
+  // Add safety check before rendering
+  if (!stages || stages.length === 0) {
+    return null; // or a loading/error state
+  }
+
+  // Ensure stage is within bounds
+  const safeStage = Math.min(Math.max(0, stage), stages.length - 1);
+  const currentStage = stages[safeStage];
+  
+  if (!currentStage) {
+    console.error(`Invalid stage: ${safeStage}, stages:`, stages);
+    return null; // or a loading/error state
+  }
+
   return (
     <OnboardingLayout
-      progress={(stage + 1) / (stages.length + 1)}
-      title={`Question ${stage + 1}`}
-      onBack={stage > 0 ? () => setStage(stage - 1) : undefined}
+      progress={(safeStage + 1) / (stages.length + 1)}
+      title={`Question ${safeStage + 1}`}
+      onBack={safeStage > 0 ? () => setStage(safeStage - 1) : undefined}
     >
       <Text variant="h2" className="mb-2 text-center min-h-[60px]">
-        {stages[stage].title}
+        {currentStage.title}
       </Text>
 
-      {stages[stage].subtitle && (
+      {currentStage.subtitle && (
         <Text variant="p" muted className="mb-2 text-center">
-          {stages[stage].subtitle}
+          {currentStage.subtitle}
         </Text>
       )}
 
-      {stages[stage].options?.map((option) => (
+      {currentStage.options?.map((option) => (
         <Button
           key={JSON.stringify(option.value)}
           variant="secondary"
@@ -142,20 +184,20 @@ export default function OnboardingForm({
         />
       ))}
 
-      {stages[stage].inputs?.map((input) => (
+      {currentStage.inputs?.map((input) => (
         <Input
           key={input.value}
           placeholder={input.placeholder}
           keyboardType={input.type}
           onBlur={(text) => {
-            if (stages[stage].key) {
-              updateUser(stages[stage].key, parseFloat(text ?? "0"));
+            if (currentStage.key) {
+              updateUser(currentStage.key, parseFloat(text ?? "0"));
             }
           }}
         />
       ))}
 
-      {stages[stage].inputs && <Button text="Continue" onPress={nextStage} />}
+      {currentStage.inputs && <Button text="Continue" onPress={nextStage} />}
     </OnboardingLayout>
   );
 }
