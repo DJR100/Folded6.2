@@ -12,7 +12,7 @@ export default ({ config }: { config: ExpoConfig }) => {
     ...config,
     name: "Folded",
     slug: "my-app",
-    version: "1.0.3", // Increment from 1.0.2 (which was already submitted)
+    version: "1.0.4",
     orientation: "portrait",
     icon: "./src/assets/images/folded_icon_11.25.png",
     scheme: "folded",
