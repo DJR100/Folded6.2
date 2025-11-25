@@ -35,6 +35,7 @@ export default function OnboardingLayout() {
         }}
       />
       <Stack.Screen name="8" />
+      <Stack.Screen name="create-account" />
     </Stack>
   );
 }

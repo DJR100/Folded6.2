@@ -2,8 +2,10 @@ import { DailyChallengeData, User } from "@folded/types";
 import {
   createUserWithEmailAndPassword,
   initializeAuth,
+  signInAnonymously,
   signInWithEmailAndPassword,
   signOut as signOutFirebase,
+  EmailAuthProvider,
 } from "@react-native-firebase/auth";
 import {
   doc,
@@ -34,6 +36,7 @@ interface AuthContext {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  linkAnonymousAccount: (email: string, password: string) => Promise<void>;
   isLoading: boolean;
   onboarding: number | "DONE";
   setOnboarding: React.Dispatch<React.SetStateAction<number | "DONE">>;
@@ -98,6 +101,36 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
     }
   };
 
+  const linkAnonymousAccount = async (email: string, password: string) => {
+    if (!auth.currentUser?.isAnonymous) {
+      throw new Error("Current user is not anonymous");
+    }
+    
+    const uid = auth.currentUser.uid; // Capture UID before linking
+    
+    const credential = EmailAuthProvider.credential(email, password);
+    await auth.currentUser.linkWithCredential(credential);
+    
+    // Update user document with email
+    if (uid) {
+      await setDoc(
+        doc(db, "users", uid),
+        { email },
+        { merge: true }
+      );
+      
+      // Explicitly reload user document after linking to ensure state is updated
+      // The onAuthStateChanged listener will also fire, but this ensures we get the latest data
+      const updatedUser = (
+        await getDoc(doc(db, "users", uid))
+      ).data() as User | undefined;
+      
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+    }
+  };
+
   // Initial user loading - this handles the first-time user fetch
   useEffect(() => {
     const readUser = async () => {
@@ -122,6 +155,23 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
   // Ensure Mixpanel is initialized once when the provider mounts
   useEffect(() => {
     initMixpanel();
+  }, []);
+
+  // Auto-create anonymous user if no user exists
+  useEffect(() => {
+    const ensureAnonymousUser = async () => {
+      // Only create anonymous user if no user exists
+      if (!auth.currentUser) {
+        try {
+          await signInAnonymously(auth);
+          if (__DEV__) console.log("✅ Created anonymous user");
+        } catch (error) {
+          console.error("Failed to create anonymous user:", error);
+        }
+      }
+    };
+    
+    ensureAnonymousUser();
   }, []);
 
   // ✅ THIS IS THE KEY CHANGE - Sync local state with database state
@@ -194,8 +244,12 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
     // setBankConnected(hasBankConnection);
 
     // ✅ STEP 4: Set up real-time listener for ongoing updates
+    // Use user.uid instead of auth.currentUser?.uid to ensure we're listening to the correct document
+    const uid = user.uid;
+    if (!uid) return; // Safety check
+    
     const snapshotListener = onSnapshot(
-      doc(db, "users", auth.currentUser?.uid ?? ""),
+      doc(db, "users", uid),
       (doc) => {
         const updatedUser = doc.data() as User | undefined;
         if (!updatedUser) return;
@@ -277,11 +331,14 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
   }, [user?.uid]);
 
   const updateUser = async (dotkey: string, value: any) => {
-    if (!user) return;
+    // Use auth.currentUser?.uid instead of user?.uid to work with anonymous users
+    // whose Firestore document might not be loaded yet
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
 
     const keys = dotkey.split(".");
 
-    // 🎯 CRITICAL FIX: Build update object for merge instead of overwriting entire document
+    // 🎯 Build update object for merge instead of overwriting entire document
     const updateObject: any = {};
     let current = updateObject;
 
@@ -296,13 +353,28 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
       console.log(`📝 Update object:`, updateObject);
     }
 
-    // Use merge: true to avoid overwriting other fields
-    await setDoc(doc(db, "users", user.uid), updateObject, { merge: true });
+    // Use merge: true to avoid overwriting other fields in Firestore
+    await setDoc(doc(db, "users", uid), updateObject, { merge: true });
 
     if (__DEV__) console.log(`✅ Firebase merge completed for ${dotkey}`);
 
-    // Don't update local state - let the real-time listener handle it
-    // This prevents race conditions and ensures we always have the latest data
+    // Optimistically update local user state so UI reflects changes immediately.
+    // The real-time Firestore listener will still keep us fully in sync.
+    setUser((prev) => {
+      if (!prev) return prev;
+
+      const next: any = { ...prev };
+      let cursor: any = next;
+
+      for (let i = 0; i < keys.length - 1; i++) {
+        const key = keys[i];
+        cursor[key] = { ...(cursor[key] || {}) };
+        cursor = cursor[key];
+      }
+
+      cursor[keys[keys.length - 1]] = value;
+      return next;
+    });
   };
 
   const value: AuthContext = {
@@ -310,6 +382,7 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
     signIn,
     signUp,
     signOut,
+    linkAnonymousAccount,
     isLoading: user === undefined,
     onboarding,
     setOnboarding,

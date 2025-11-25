@@ -9,7 +9,7 @@ import * as WebBrowser from "expo-web-browser";
 import { TouchableOpacity } from "react-native";
 
 export default function CreateAccountScreen() {
-  const { signUp, user, updateUser } = useAuthContext();
+  const { linkAnonymousAccount, user, updateUser } = useAuthContext();
   const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,7 +17,11 @@ export default function CreateAccountScreen() {
   const [acceptedLegal, setAcceptedLegal] = useState(false);
 
   if (user?.tier) return <Redirect href="/dashboard" />;
-  if (user) return <Redirect href="/onboarding" />;
+  
+  // If user is not anonymous, skip to post-onboarding
+  if (!auth.currentUser?.isAnonymous) {
+    return <Redirect href="/post-onboarding" />;
+  }
 
   return (
     <View className="flex-1 px-4 py-6 gap-8">
@@ -26,7 +30,7 @@ export default function CreateAccountScreen() {
           Create your account
         </Text>
         <Text variant="p" className="text-center" muted>
-          Join Folded and start your journey today.
+          To secure your subscription and enable account recovery, please create an account.
         </Text>
       </View>
 
@@ -89,9 +93,9 @@ export default function CreateAccountScreen() {
           text="Create Account"
           disabled={!acceptedLegal}
           onPress={async () => {
-            // 1) Create Firebase Auth user (handles email uniqueness)
+            // 1) Link anonymous account to email/password (converts anonymous to permanent)
             try {
-              await signUp(email.trim(), password);
+              await linkAnonymousAccount(email.trim(), password);
             } catch (e: any) {
               const code: string = e?.code || "";
               if (code.includes("email-already-in-use")) {
@@ -122,7 +126,7 @@ export default function CreateAccountScreen() {
                 privacyAccepted: true,
                 acceptedAt: Date.now(),
               });
-              router.replace("/onboarding");
+              router.replace("/post-onboarding");
             } catch (e: any) {
               const code: string = e?.code || ""; // e.g. "functions/already-exists"
               if (code.includes("already-exists")) {
@@ -138,19 +142,8 @@ export default function CreateAccountScreen() {
             }
           }}
         />
-
-        <View className="items-center gap-2 mt-2">
-          <Text variant="sm" muted>
-            Already have an account?{" "}
-            <Text
-              className="text-accent"
-              onPress={() => router.replace("/auth/sign-in")}
-            >
-              Sign In
-            </Text>
-          </Text>
-        </View>
       </View>
     </View>
   );
 }
+

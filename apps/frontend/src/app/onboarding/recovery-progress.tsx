@@ -5,7 +5,6 @@ import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { OnboardingLayout } from "@/components/layouts/onboarding";
 import { Button, Input, Text, View } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
-import { initializeRecoveryCounters } from "@/lib/recovery-counter-init";
 
 export default function RecoveryProgress() {
   const { setOnboarding, updateUser } = useAuthContext();
@@ -26,45 +25,11 @@ export default function RecoveryProgress() {
     const days = parseInt(recoveryDays) || 0;
 
     if (__DEV__) {
-      console.log(
-        `🚀 Starting recovery counter initialization with ${days} days`,
-      );
+      console.log(`🚀 Saving existing recovery days: ${days}`);
     }
 
-    // Always initialize counters, even if days is 0
-    const { streakStart, dailyChallenge, existingRecoveryDays } =
-      initializeRecoveryCounters(days);
-
-    if (__DEV__) {
-      console.log("📝 About to update Firebase with:", {
-        "streak.start": streakStart,
-        "streak.start_readable": new Date(streakStart).toISOString(),
-        "dailyChallenge.streakCount": dailyChallenge.streakCount,
-        existingRecoveryDays: existingRecoveryDays,
-      });
-    }
-
-    // 🎯 CRITICAL FIX: Update sequentially to avoid race conditions
-    if (__DEV__) console.log("🔧 Step 1: Setting streak.start...");
-    await updateUser("streak.start", streakStart);
-
-    if (__DEV__) console.log("🔧 Step 2: Setting dailyChallenge...");
-    await updateUser("dailyChallenge", dailyChallenge);
-
-    if (__DEV__) console.log("🔧 Step 3: Setting existingRecoveryDays...");
-    await updateUser("demographic.existingRecoveryDays", existingRecoveryDays);
-
-    if (__DEV__) {
-      console.log(
-        `✅ Initialized all recovery counters with ${days} days of existing progress`,
-      );
-      console.log(
-        `🎯 Expected streak start: ${new Date(streakStart).toISOString()}`,
-      );
-    }
-
-    // Small delay to ensure Firestore sync
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Store existing recovery days; counters will be initialized on first dashboard load
+    await updateUser("demographic.existingRecoveryDays", days);
 
     setOnboarding(4);
     router.push("/onboarding/4");
@@ -73,32 +38,8 @@ export default function RecoveryProgress() {
   const onJustStarting = async () => {
     if (__DEV__) console.log("🚀 Starting fresh recovery (0 days)");
 
-    // Use the same initialization logic with 0 days
-    const { streakStart, dailyChallenge } = initializeRecoveryCounters(0);
-
-    if (__DEV__) {
-      console.log("📝 About to update Firebase with fresh start:", {
-        "streak.start": streakStart,
-        "streak.start_readable": new Date(streakStart).toISOString(),
-        "dailyChallenge.streakCount": dailyChallenge.streakCount,
-      });
-    }
-
-    // 🎯 CRITICAL FIX: Update sequentially to avoid race conditions
-    if (__DEV__) console.log("🔧 Step 1: Setting streak.start...");
-    await updateUser("streak.start", streakStart);
-
-    if (__DEV__) console.log("🔧 Step 2: Setting dailyChallenge...");
-    await updateUser("dailyChallenge", dailyChallenge);
-
-    if (__DEV__) console.log("🔧 Step 3: Setting existingRecoveryDays...");
+    // Explicitly record 0 existing days; counters will be initialized on dashboard
     await updateUser("demographic.existingRecoveryDays", 0);
-
-    if (__DEV__)
-      console.log("✅ Initialized all recovery counters for fresh start");
-
-    // Small delay to ensure Firestore sync
-    await new Promise((resolve) => setTimeout(resolve, 500));
 
     setOnboarding(4);
     router.push("/onboarding/4");

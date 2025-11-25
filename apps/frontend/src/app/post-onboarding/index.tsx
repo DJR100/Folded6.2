@@ -16,6 +16,11 @@ export default function Onboarding() {
           // ✅ CRITICAL FIX: Update tier in database to mark onboarding complete
           await updateUser("tier", 1);
           setPostOnboarding("DONE");
+          
+          // Wait for user state to update before navigating
+          // This ensures the dashboard receives the updated tier value and user object
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
           router.push("/dashboard");
         },
       }}

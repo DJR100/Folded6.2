@@ -1,34 +1,26 @@
-// import { Redirect, router } from "expo-router";
 import { router } from "expo-router";
 import { useEffect } from "react";
-// import { ActivityIndicator } from "react-native";
-// import {
-//   LinkExit,
-//   LinkSuccess,
-//   create,
-//   open,
-// } from "react-native-plaid-link-sdk";
-
-// import { OnboardingLayout } from "@/components/layouts/onboarding";
-// import { Text, View } from "@/components/ui";
-// import { colors } from "@/constants/colors";
 import { useAuthContext } from "@/hooks/use-auth-context";
-// import { api } from "@/lib/firebase";
+import { auth } from "@/hooks/use-auth-context";
 
 export default function Connect() {
-  const { setOnboarding } = useAuthContext(); // setBankConnected removed since not needed
+  const { setOnboarding } = useAuthContext();
 
-  // Skip bank connection step - immediately move to post-onboarding
   useEffect(() => {
-    const skipToNextStep = () => {
+    // Check if user is anonymous (needs account creation)
+    // Check both isAnonymous flag AND if user has email (more reliable)
+    const isAnonymous = auth.currentUser?.isAnonymous || !auth.currentUser?.email;
+    
+    if (isAnonymous) {
+      router.push("/onboarding/create-account");
+    } else {
+      // Already has account, proceed normally
       setOnboarding("DONE");
       router.push("/post-onboarding");
-    };
-
-    skipToNextStep();
+    }
   }, [setOnboarding]);
 
-  return null; // Return null since we're immediately redirecting
+  return null;
 
   // COMMENTED OUT PLAID BANK CONNECTION FUNCTIONALITY - keeping for future use
   // const { bankConnected, setBankConnected, setOnboarding } = useAuthContext();

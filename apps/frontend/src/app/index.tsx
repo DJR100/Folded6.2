@@ -84,10 +84,8 @@ export default function SignIn() {
         <View className="w-full flex items-center gap-3 mb-6">
           <Button
             variant="accent"
-            text={user ? "Continue onboarding" : "Sign in / Create account"}
-            onPress={() =>
-              user ? router.push("/onboarding") : router.push("/auth/sign-in")
-            }
+            text="Get Started"
+            onPress={() => router.push("/onboarding")}
           />
         </View>
       </View>

@@ -22,6 +22,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { track } from "@/lib/mixpanel";
 import { useResponsive } from "@/lib/responsive";
 import { colors } from "@/constants/colors";
+import { initializeRecoveryCounters } from "@/lib/recovery-counter-init";
+import { deriveSpendMeta } from "@/lib/moneysaved";
 
 const ProfileHeaderInline = React.memo(function ProfileHeaderInline() {
   const { user } = useAuthContext();
@@ -117,7 +119,7 @@ function AutoFit({ children }: { children: React.ReactNode }) {
 
 // Internal component that uses the daily challenge context
 function DashboardContent() {
-  const { user } = useAuthContext();
+  const { user, updateUser } = useAuthContext();
 
   // First/any dashboard view tracking
   useEffect(() => {
@@ -148,6 +150,50 @@ function DashboardContent() {
     major: { value: number; units: string };
     minor: { value: number; units: string };
   }>({ major: { value: 0, units: "s" }, minor: { value: 0, units: "ms" } });
+
+  useEffect(() => {
+    if (!user) return;
+    const hasStreakStart = !!user.streak?.start;
+    const hasSpendMeta = !!user.spendMeta?.usdPerMs;
+
+    // If both are already present, nothing to do
+    if (hasStreakStart && hasSpendMeta) return;
+
+    const existingDays = user.demographic?.existingRecoveryDays ?? 0;
+    const { streakStart } = initializeRecoveryCounters(existingDays);
+
+    if (!hasStreakStart) {
+      if (__DEV__) {
+        console.log("✅ Initializing streak.start on dashboard", {
+          existingDays,
+          streakStart,
+        });
+      }
+      // Use shared updater so we don't duplicate Firestore logic
+      updateUser("streak.start", streakStart);
+    }
+
+    if (!hasSpendMeta) {
+      const monthlyRange = user.demographic?.gambling?.monthlySpend;
+      const max =
+        typeof monthlyRange === "object" &&
+        monthlyRange &&
+        "max" in monthlyRange
+          ? (monthlyRange as any).max
+          : null;
+
+      if (max != null) {
+        const spendMeta = deriveSpendMeta(Number(max));
+        if (__DEV__) {
+          console.log("✅ Initializing spendMeta on dashboard", {
+            monthlyMax: max,
+            spendMeta,
+          });
+        }
+        updateUser("spendMeta", spendMeta);
+      }
+    }
+  }, [user?.uid, user?.tier]);
 
   // Your existing streak calculation logic
   useEffect(() => {
@@ -297,10 +343,11 @@ function DashboardContent() {
           <ProfileHeaderInline />
 
           <View className="flex flex-col gap-2 items-center">
-            {(user?.tier ?? 0) > 0 && (
+            {/* Bet Free timer: show whenever we have a streak start */}
+            {user?.streak?.start && (
               <>
                 <Text className="text-base font-medium">Bet Free:</Text>
-                <BetFreeTimer startTimestampMs={user?.streak?.start ?? null} />
+                <BetFreeTimer startTimestampMs={user.streak.start} />
               </>
             )}
             {/* Money Saved Ticker */}

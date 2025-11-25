@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { OnboardingLayout } from "@/components/layouts/onboarding";
 import { Button, Input, Text } from "@/components/ui";
-import { useAuthContext } from "@/hooks/use-auth-context";
+import { useAuthContext, auth } from "@/hooks/use-auth-context";
 import { db } from "@/lib/firebase";
 import { deriveSpendMeta } from "@/lib/moneysaved";
 import { mapOnboardingFormStageToStep, trackOnboardingStepView } from "@/lib/funnel";
@@ -128,9 +128,10 @@ export default function OnboardingForm({
 
         // 2. Save spendMeta to Firestore
 
-        if (user?.uid) {
+        const uid = auth.currentUser?.uid;
+        if (uid) {
           await setDoc(
-            doc(db, "users", user.uid),
+            doc(db, "users", uid),
             { spendMeta },
             { merge: true },
           );

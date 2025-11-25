@@ -7,10 +7,15 @@ import { useAuthContext } from "@/hooks/use-auth-context";
 import { useNotifications } from "@/lib/notifications";
 
 export default function DashboardLayout() {
-  const { user } = useAuthContext();
+  const { user, isLoading } = useAuthContext();
   useNotifications();
 
-  if (!user) return <Redirect href="/" />;
+  // Only redirect if user is explicitly null (not loading)
+  // user === undefined means still loading, user === null means no user
+  if (user === null && !isLoading) return <Redirect href="/" />;
+  
+  // Show nothing while loading (user === undefined)
+  if (user === undefined) return null;
 
   return (
     <DailyChallengeProvider>
