@@ -64,9 +64,9 @@ export default function SignInScreen() {
             Don&apos;t have an account?{" "}
             <Text
               className="text-accent"
-              onPress={() => router.push("/auth/create-account")}
+              onPress={() => router.back()}
             >
-              Create Account
+              Get Started
             </Text>
           </Text>
         </View>

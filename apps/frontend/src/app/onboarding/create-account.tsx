@@ -17,11 +17,6 @@ export default function CreateAccountScreen() {
   const [acceptedLegal, setAcceptedLegal] = useState(false);
 
   if (user?.tier) return <Redirect href="/dashboard" />;
-  
-  // If user is not anonymous, skip to post-onboarding
-  if (!auth.currentUser?.isAnonymous) {
-    return <Redirect href="/post-onboarding" />;
-  }
 
   return (
     <View className="flex-1 px-4 py-6 gap-8">

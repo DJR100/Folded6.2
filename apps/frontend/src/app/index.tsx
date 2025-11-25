@@ -87,6 +87,15 @@ export default function SignIn() {
             text="Get Started"
             onPress={() => router.push("/onboarding")}
           />
+          <Text variant="sm" muted>
+            Have an account?{" "}
+            <Text
+              className="text-accent"
+              onPress={() => router.push("/auth/sign-in")}
+            >
+              Sign in
+            </Text>
+          </Text>
         </View>
       </View>
     </View>
