@@ -1,5 +1,7 @@
 import { Redirect, router } from "expo-router";
 import { useState } from "react";
+import { Platform } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
 import { Button, Input, Text, View } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
@@ -50,14 +52,33 @@ export default function SignInScreen() {
                 try {
                   await signUp(e, password);
                 } catch (inner: any) {
-                  alert(inner?.message || "Could not create demo account. Try again.");
+                  alert(
+                    inner?.message || "Could not create demo account. Try again.",
+                  );
                 }
               } else {
-                alert(err?.message || "Sign in failed. Please check your credentials.");
+                alert(
+                  err?.message ||
+                    "Sign in failed. Please check your credentials.",
+                );
               }
             }
           }}
         />
+
+        {Platform.OS === "ios" && (
+          <Button
+            variant="white"
+            text="Continue with Apple"
+            iconL={<FontAwesome name="apple" size={20} color="black" />}
+            onPress={() => {
+              // TODO: Wire up real Apple one-tap sign-in
+              if (__DEV__) {
+                console.log("Apple Sign-In pressed (UX stub)");
+              }
+            }}
+          />
+        )}
 
         <View className="items-center gap-2 mt-2">
           <Text variant="sm" muted>

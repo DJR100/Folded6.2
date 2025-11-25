@@ -1,17 +1,17 @@
 import { Redirect, router } from "expo-router";
 import { useState } from "react";
+import { Platform, TouchableOpacity } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
+import { FontAwesome } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
 
 import { Button, Input, Text, View } from "@/components/ui";
 import { auth, useAuthContext } from "@/hooks/use-auth-context";
 import { api } from "@/lib/firebase";
-import Feather from "@expo/vector-icons/Feather";
-import * as WebBrowser from "expo-web-browser";
-import { TouchableOpacity } from "react-native";
 
 export default function CreateAccountScreen() {
   const { linkAnonymousAccount, user, updateUser } = useAuthContext();
   const [username, setUsername] = useState("");
-  const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [acceptedLegal, setAcceptedLegal] = useState(false);
@@ -34,11 +34,6 @@ export default function CreateAccountScreen() {
           placeholder="Username"
           value={username}
           onChangeText={setUsername}
-        />
-        <Input
-          placeholder="First name"
-          value={firstName}
-          onChangeText={setFirstName}
         />
         <Input
           placeholder="Email"
@@ -113,7 +108,7 @@ export default function CreateAccountScreen() {
                 endpoint: "user-reserveUsername",
                 data: {
                   username: username.trim(),
-                  firstName: firstName.trim() || null,
+                  firstName: null,
                 },
               });
               await updateUser("legal", {
@@ -137,6 +132,20 @@ export default function CreateAccountScreen() {
             }
           }}
         />
+
+        {Platform.OS === "ios" && (
+          <Button
+            variant="white"
+            text="Continue with Apple"
+            iconL={<FontAwesome name="apple" size={20} color="black" />}
+            onPress={() => {
+              // TODO: Wire up real Apple one-tap sign-in for account creation
+              if (__DEV__) {
+                console.log("Apple Sign-In (create-account) pressed (UX stub)");
+              }
+            }}
+          />
+        )}
       </View>
     </View>
   );
