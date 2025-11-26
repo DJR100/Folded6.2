@@ -21,7 +21,7 @@ export default ({ config }: { config: ExpoConfig }) => {
     ios: {
       supportsTablet: false,
       bundleIdentifier: "com.folded.so",
-      buildNumber: "25",
+      buildNumber: "28",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSCameraUsageDescription:
