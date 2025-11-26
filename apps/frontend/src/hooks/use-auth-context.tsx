@@ -7,12 +7,7 @@ import {
   signOut as signOutFirebase,
   EmailAuthProvider,
 } from "@react-native-firebase/auth";
-import {
-  doc,
-  getDoc,
-  onSnapshot,
-  setDoc,
-} from "@react-native-firebase/firestore";
+import { doc, getDoc, onSnapshot, setDoc } from "@react-native-firebase/firestore";
 import _ from "lodash";
 import {
   type PropsWithChildren,
@@ -21,6 +16,10 @@ import {
   useEffect,
   useState,
 } from "react";
+
+import * as AppleAuthentication from "expo-apple-authentication";
+import * as Crypto from "expo-crypto";
+import authModule from "@react-native-firebase/auth";
 
 import { app, db } from "@/lib/firebase";
 import { initMixpanel, mixpanel, track } from "@/lib/mixpanel";
@@ -37,6 +36,7 @@ interface AuthContext {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   linkAnonymousAccount: (email: string, password: string) => Promise<void>;
+  signInWithApple: () => Promise<void>;
   isLoading: boolean;
   onboarding: number | "DONE";
   setOnboarding: React.Dispatch<React.SetStateAction<number | "DONE">>;
@@ -51,6 +51,16 @@ interface AuthContext {
 }
 
 const AuthContext = createContext<AuthContext>({} as AuthContext);
+
+function generateNonce(length = 32) {
+  const chars =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
 
 export function AuthContextProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<User | null>();
@@ -98,6 +108,73 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
     } catch (error) {
       console.error(error);
       throw error;
+    }
+  };
+
+  const signInWithApple = async () => {
+    try {
+      const available = await AppleAuthentication.isAvailableAsync();
+      if (!available) {
+        alert("Apple Sign-In is not available on this device.");
+        return;
+      }
+
+      const rawNonce = generateNonce();
+      const hashedNonce = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        rawNonce,
+      );
+
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+        nonce: hashedNonce,
+      });
+
+      if (!credential.identityToken) {
+        throw new Error("Apple Sign-In failed: no identity token returned.");
+      }
+
+      const appleCred = authModule.AppleAuthProvider.credential(
+        credential.identityToken,
+        rawNonce,
+      );
+
+      await authModule().signInWithCredential(appleCred);
+
+      const email = credential.email;
+      const givenName = credential.fullName?.givenName;
+      if (email || givenName) {
+        const displayName = givenName ?? email?.split("@")[0] ?? null;
+        if (displayName) {
+          await updateUser("displayName", displayName);
+        }
+        if (email) {
+          await updateUser("email", email);
+        }
+      }
+    } catch (e: any) {
+      if (
+        e?.code === "ERR_CANCELED" ||
+        e?.code === "ERR_APPLE_AUTHENTICATION_CANCELED"
+      ) {
+        if (__DEV__) console.log("Apple Sign-In cancelled");
+        return;
+      }
+
+      if (__DEV__) {
+        console.log("Apple Sign-In raw error:", e);
+        try {
+          console.log("Apple Sign-In raw error JSON:", JSON.stringify(e));
+        } catch {
+          // ignore JSON stringify issues
+        }
+      }
+
+      console.error("Apple Sign-In error", e);
+      alert("Apple Sign-In failed. Please try again.");
     }
   };
 
@@ -383,6 +460,7 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
     signUp,
     signOut,
     linkAnonymousAccount,
+    signInWithApple,
     isLoading: user === undefined,
     onboarding,
     setOnboarding,

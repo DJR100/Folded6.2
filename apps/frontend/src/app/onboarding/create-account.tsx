@@ -10,13 +10,19 @@ import { auth, useAuthContext } from "@/hooks/use-auth-context";
 import { api } from "@/lib/firebase";
 
 export default function CreateAccountScreen() {
-  const { linkAnonymousAccount, user, updateUser } = useAuthContext();
+  const { linkAnonymousAccount, user, updateUser, signInWithApple } =
+    useAuthContext();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [acceptedLegal, setAcceptedLegal] = useState(false);
 
-  if (user?.tier) return <Redirect href="/dashboard" />;
+  // If user has already completed onboarding, go straight to dashboard
+  if (user?.tier && user.tier > 0) return <Redirect href="/dashboard" />;
+
+  // If user is signed in (e.g. via Apple) but hasn't completed onboarding yet,
+  // send them to the post-onboarding "Thanks for Joining" screen.
+  if (user && user.tier === 0) return <Redirect href="/post-onboarding" />;
 
   return (
     <View className="flex-1 px-4 py-6 gap-8">
@@ -138,12 +144,7 @@ export default function CreateAccountScreen() {
             variant="white"
             text="Continue with Apple"
             iconL={<FontAwesome name="apple" size={20} color="black" />}
-            onPress={() => {
-              // TODO: Wire up real Apple one-tap sign-in for account creation
-              if (__DEV__) {
-                console.log("Apple Sign-In (create-account) pressed (UX stub)");
-              }
-            }}
+            onPress={signInWithApple}
           />
         )}
       </View>

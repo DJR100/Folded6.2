@@ -7,7 +7,7 @@ import { Button, Input, Text, View } from "@/components/ui";
 import { useAuthContext } from "@/hooks/use-auth-context";
 
 export default function SignInScreen() {
-  const { signIn, signUp, user } = useAuthContext();
+  const { signIn, signUp, signInWithApple, user } = useAuthContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -71,12 +71,7 @@ export default function SignInScreen() {
             variant="white"
             text="Continue with Apple"
             iconL={<FontAwesome name="apple" size={20} color="black" />}
-            onPress={() => {
-              // TODO: Wire up real Apple one-tap sign-in
-              if (__DEV__) {
-                console.log("Apple Sign-In pressed (UX stub)");
-              }
-            }}
+            onPress={signInWithApple}
           />
         )}
 
