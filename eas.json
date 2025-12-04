@@ -1,7 +1,7 @@
 {
   "cli": {
     "version": ">= 16.13.2",
-    "appVersionSource": "remote"
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -18,7 +18,7 @@
       }
     },
     "production": {
-      "autoIncrement": true,
+      "autoIncrement": false,
       "env": {
         "EXPO_PUBLIC_RC_IOS_KEY": "appl_srziEcfuCoKLssNrNZdBUlpNTgm"
       }

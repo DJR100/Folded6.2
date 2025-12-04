@@ -21,7 +21,7 @@ import { useAuthContext } from "@/hooks/use-auth-context";
 import { track } from "@/lib/mixpanel";
 
 const FEEDBACK_URL = "https://forms.gle/7nmUPk3wC15mmL4p8";
-const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/GAQVvOphcG1BZEJOg636n6";
+const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/Dfo3hXH3IS23ZupnIRbnJE";
 const SUPPORT_EMAIL = "hello@folded.app";
 const SUPPORT_SUBJECT = "Folded App Support";
 
