@@ -12,7 +12,7 @@ export default ({ config }: { config: ExpoConfig }) => {
     ...config,
     name: "Folded",
     slug: "my-app",
-    version: "1.0.5",
+    version: "1.0.6",
     orientation: "portrait",
     icon: "./src/assets/images/folded_icon_11.25.png",
     scheme: "folded",
@@ -21,7 +21,7 @@ export default ({ config }: { config: ExpoConfig }) => {
     ios: {
       supportsTablet: false,
       bundleIdentifier: "com.folded.so",
-      buildNumber: "28",
+      buildNumber: "29",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSCameraUsageDescription:
